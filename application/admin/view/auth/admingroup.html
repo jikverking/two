@@ -1,0 +1,137 @@
+{include file="common/head"/}
+<div class="layui-page-header headers">
+    <div class="pagewrap">
+        <span class="layui-breadcrumb">
+          <a href="{:url('index/index')}">首页</a>
+          <a href="javascript:;">{$authruleinfo.pid}</a>
+          <a><cite>{$authruleinfo.id}</cite></a>
+        </span>
+        <a href="javascript:location.replace(location.href);" style="float:right" class="layui-btn layui-btn-blue refreshs"><i class="fa fa-history falocation" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="layui-row">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="demoTable">
+                <div class="layui-inline layui-inlines">
+                    <input class="layui-input" name="key" id="key" placeholder="请输入查询内容">
+                </div>
+                <button class="layui-btn layui-btns layui-btn-blue" id="search" data-type="reload"><i class="layui-icon" style="color: #fff">&#xe615;</i>搜索</button>   
+            </div>
+            <table class="layui-table" id="list" lay-filter="list"></table>
+        </div>
+    </div>
+</div>
+{include file="common/foot"/}
+<script type="text/html" id="topBtn">
+    <button class="layui-btn layui-btn-blue layui-btn-sm" onclick="x_admin_show('添加用户组','{:url('groupadd')}','360px','200px','95%','45%')"><i class="layui-icon"></i>添加</button>
+</script>
+<script type="text/html" id="action">
+    <a tipsmsg="编辑" class="layuimsg" onclick="x_admin_show('编辑用户组','{:url('groupedit')}?id={{d.group_id}}','360px','200px','95%','45%')">
+    <button class="layui-btn layui-btns layui-btn-blue layui-btn-xs">
+      <i class="layui-icon">&#xe642;</i>
+    </button>
+    </a>
+    <a tipsmsg="配置权限" class="layuimsg" onclick="x_admin_show('配置权限','{:url('groupaccess')}?id={{d.group_id}}','','','95%','95%')">
+    <button class="layui-btn layui-btns layui-btn-green layui-btn-xs">
+      <i class="layui-icon">&#xe716;</i>
+    </button>
+    </a>
+    <a tipsmsg="删除" class="layuimsg"  lay-event="del">
+    <button class="layui-btn layui-btns layui-btn-red layui-btn-xs">
+      <i class="layui-icon">&#xe640;</i>
+    </button>
+    </a>
+</script>
+<script>
+    layui.use(['table','form','element'], function() {
+        var table = layui.table,form = layui.form,element = layui.element, $ = layui.jquery;
+
+        //获取信息
+        var tableIn = table.render({
+            elem: '#list',
+            url: '{:url("admingroup")}',
+            text:{none: '<i class="fa fa-snowflake-o" aria-hidden="true"></i>&nbsp;暂无相关数据'},
+            method: 'post',
+            toolbar: '#topBtn',
+            title: '用户组数据信息',
+            page: true,
+            cols: [[
+                {field: 'group_id', title: '编号', width: 80,align: 'center',sort: true},
+                {field: 'title', title: '用户组名',width:180, edit: 'text'},
+                {field: 'addtime', title: '添加时间',width:180,sort: true},
+                {width: 160,title: '操作', align: 'center', toolbar: '#action',fixed: 'right'}
+            ]],
+    
+            done:function(msg){
+                onmousemoves();
+                /*console.log(msg.msg);*/
+            }
+        });
+
+        //监听单元格编辑
+        table.on('edit(list)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+            var arrs ={
+                group_id:data.group_id,//验证的数据类类型
+                title:value//提交的数据
+            };
+            loading =layer.load(1, {shade: [0.1,'#fff']});
+            $.post('{:url("groupedit")}',arrs,function(res){
+                layer.close(loading);
+                if(res.code===1){
+                    layer.msg(res.msg);
+                    tableIn.reload();
+                }else if(res.code===0){
+                    layer.msg(res.msg);
+                }else{
+                    layer.msg('你无操作权限!')  ;
+                }
+            },'json')
+        });
+
+        //搜索
+        $('#search').on('click', function() {
+            var key = $('#key').val();
+            if($.trim(key)==='') {
+                layer.msg('请输入关键字！');
+                return;
+            }
+            tableIn.reload({
+                where: {key: key}
+            })
+        });
+        
+        //使用状态筛选
+        form.on('select(status)', function(data){
+            tableIn.reload({
+                where: {statu: data.value}
+            });
+        })
+       
+        //单条信息删除
+        table.on('tool(list)', function(obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('您确定要删除该分组吗？', {icon: 3,skin: 'layui-layer-lan',anim: 4,title:'删除'}, function(index){
+                    var loading = layer.load(1, {shade: [0.1, '#fff']});
+                    $.post("{:url('groupdel')}",{id:data.group_id},function(res){
+                        layer.close(loading);
+                        if(res.code===1){
+                            layer.msg(res.msg);
+                            tableIn.reload();
+                        }else if(res.code===0){
+                            layer.msg(res.msg);
+                        }else{
+                            layer.msg('你无操作权限!');
+                        }
+                    },'json');
+                    layer.close(index);
+                });
+            }
+        });
+    });
+</script>

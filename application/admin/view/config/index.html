@@ -1,0 +1,369 @@
+{include file="common/head" /}
+<div class="layui-page-header headers">
+    <div class="pagewrap">
+        <span class="layui-breadcrumb">
+          <a href="{:url('index/index')}">首页</a>
+          <a href="javascript:;">{$authruleinfo.pid}</a>
+          <a><cite>{$authruleinfo.id}</cite></a>
+        </span>
+        <a href="javascript:location.replace(location.href);" style="float:right" class="layui-btn layui-btn-blue refreshs"><i class="fa fa-history falocation" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="layui-row">
+    <div class="layui-card">
+    	 <div class="layui-tab layui-tab-brief">
+            <ul class="layui-tab-title">
+                <li class="layui-this">基础设置</li>
+                <li>SEO管理</li>
+                <li>验证码</li>
+                <li>上传设置</li>
+                <li>接口设置</li>
+            </ul>
+            <div class="layui-tab-content" >
+                <div class="layui-tab-item layui-show"><br>
+                    <div class="layui-anim layui-anim-up">
+                        <form class="layui-form layui-card-body layui-card-bodys" lay-filter="form-system">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">应用名</label>
+                                <div class="layui-input-4">
+                                    <input type="text" name="name" lay-verify="required" placeholder="请输入网站名称" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">客户端域名</label>
+                                <div class="layui-input-4">
+                                    <input type="text" name="url" lay-verify="url" placeholder="请输入网站地址" class="layui-input">
+                                </div>
+                            </div>
+                         
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">网站LOGO</label>
+                                <input type="hidden" name="logo" id="logo">
+                                <div class="layui-input-block">
+                                    <div class="layui-upload">
+                                        <button type="button" class="layui-btn layui-btns layui-btn-blue" id="logoBtn"><i class="fa fa-cloud-upload" aria-hidden="true"></i>&nbsp;&nbsp;点击上传</button>
+                                        <div class="layer-photos-demo layui-upload-list" id="layer-photos-demo">
+                                            <img class="layui-upload-img" id="logos" style="border-radius: 50%;width: 110px;height: 110px;">
+                                            <p id="demoText"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item" style="display: none;" id="jin">
+                              <label class="layui-form-label"></label>
+                              <div class="layui-input-4" style="width:140px;">
+                                  <div class="layui-progress layui-progress-big" lay-showPercent="yes" lay-filter="progressBar">
+                                      <div class="layui-progress-bar layui-btn-blue" lay-percent="0%"></div>
+                                  </div>
+                              </div>
+                            </div>
+                          <!--   <div class="layui-form-item layui-form-text">
+                                <label class="layui-form-label">QQ群二维码</label>
+                                <div class="layui-input-block">
+                                    <textarea name="qq" lay-verify="qq" placeholder="请输入QQ群二维码" class="layui-textarea"></textarea>
+                                </div>
+                            </div>
+                            <div class="layui-form-item layui-form-text">
+                                <label class="layui-form-label">自动关注公众号</label>
+                                <div class="layui-input-block">
+                                    <textarea name="focus" lay-verify="focus" placeholder="请输入自动关注公众号" class="layui-textarea"></textarea>
+                                    <div class="layui-form-mid layui-word-aux">
+                                        <span style="color: red">*</span>用逗号进行分割
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">网站状态</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="statu" value="open" title="开启">
+                                    <input type="radio" name="statu" value="close" title="关闭">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">分页数量</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="limit" lay-verify="limit" placeholder="请输入分页数量" class="layui-input">
+                                    <div class="layui-form-mid layui-word-aux">
+                                        <span style="color: red">*</span> 分页显示条数
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">备案号</label>
+                                <div class="layui-input-3">
+                                    <input type="text" name="bah" placeholder="请输入备案号" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">Copyright</label>
+                                <div class="layui-input-3">
+                                    <input type="text" name="copyright" placeholder="请输入Copyright" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">公司地址</label>
+                                <div class="layui-input-3">
+                                    <input type="text" name="ads" placeholder="请输入公司地址" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">联系电话</label>
+                                <div class="layui-input-3">
+                                    <input type="text" name="tel" placeholder="请输入联系电话" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">邮箱账号</label>
+                                <div class="layui-input-3">
+                                    <input type="text" name="email" placeholder="请输入邮箱账号" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button type="button" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="sys">提交</button>
+                                    <button type="reset" class="layui-btn layui-btns layui-btns layui-btn-primary">重置</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="layui-tab-item"><br>
+                    <div class="layui-anim layui-anim-up">
+                        <form class="layui-form" lay-filter="form-system">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">SEO标题</label>
+                                <div class="layui-input-4">
+                                    <input type="text" name="title" lay-verify="required" placeholder="请输入SEO标题" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item layui-form-text">
+                                <label class="layui-form-label">SEO关键字</label>
+                                <div class="layui-input-block">
+                                    <textarea name="key" lay-verify="required" placeholder="请输入SEO关键字" class="layui-textarea"></textarea>
+                                </div>
+                            </div>
+                            <div class="layui-form-item layui-form-text">
+                                <label class="layui-form-label">SEO描述</label>
+                                <div class="layui-input-block">
+                                    <textarea name="des" lay-verify="required" placeholder="请输入SEO描述" class="layui-textarea"></textarea>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button type="button" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="sys">提交</button>
+                                    <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="layui-tab-item"><br>
+                    <div class="layui-anim layui-anim-up">
+                        <form class="layui-form" lay-filter="form-system">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">用户登录</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="usercode" value="open" title="开启">
+                                    <input type="radio" name="usercode" value="close" title="关闭">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">管理员登录</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="code" value="open" title="开启">
+                                    <input type="radio" name="code" value="close" title="关闭">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button type="button" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="sys">提交</button>
+                                    <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="layui-tab-item"><br>
+                    <div class="layui-anim layui-anim-up">
+                        <form class="layui-form" lay-filter="form-system">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">上传大小</label>
+                                <div class="layui-input-3">
+                                    <input type="text" name="uploadsize" placeholder="请输入上传大小" class="layui-input"  lay-verify="size" id="uploadsize">
+                                    <div class="layui-form-mid layui-word-aux">
+                                            <span style="color: red">*</span> 设置文件最大可允许上传的大小，单位 KB。不支持ie8/9
+                                    </div> 
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">图片类型</label>
+                                <div class="layui-input-3">
+                                    <input type="text" name="uploadimgtype" placeholder="请输入上传图片类型" class="layui-input"  lay-verify="uploadtype">
+                                    <div class="layui-form-mid layui-word-aux">
+                                            <span style="color: red">*</span>  jpg|png|jpeg 即代表只允许上传压缩格式的文件
+                                    </div> 
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">文件类型</label>
+                                <div class="layui-input-3">
+                                    <input type="text" name="uploadfiletype" placeholder="请输入上传大小" class="layui-input">
+                                    <div class="layui-form-mid layui-word-aux">
+                                            <span style="color: red">*</span> doc|pdf|xls 即代表只允许上传压缩格式的文件
+                                    </div> 
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">视频类型</label>
+                                <div class="layui-input-3">
+                                    <input type="text" name="uploadvideotype" placeholder="请输入上传大小" class="layui-input">
+                                    <div class="layui-form-mid layui-word-aux">
+                                            <span style="color: red">*</span> avi|rmvb|flv 即代表只允许上传压缩格式的文件
+                                    </div> 
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">音频类型</label>
+                                <div class="layui-input-3">
+                                    <input type="text" name="uploadaudiotype" placeholder="请输入上传大小" class="layui-input">
+                                    <div class="layui-form-mid layui-word-aux">
+                                            <span style="color: red">*</span> mp3|aac|opus 即代表只允许上传压缩格式的文件
+                                    </div> 
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button type="button" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="sys" id="upload">提交</button>
+                                    <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="layui-tab-item"><br>
+                    <div class="layui-anim layui-anim-up">
+                        <form class="layui-form" lay-filter="form-system">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">appkey</label>
+                                <div class="layui-input-3">
+                                    <input type="text" name="apiappkey" placeholder="请输入appkey" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">接口地址</label>
+                                <div class="layui-input-3">
+                                    <input type="text" name="apiurl" placeholder="请输入接口地址" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button type="button" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="sys">提交</button>
+                                    <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div> 
+        </div> 
+    </div>
+</div>
+{include file="common/foot" /}
+<script>
+var url = '{:url("edit")}';
+layui.use(['form','layer','upload','element'], function(){
+    var form = layui.form
+    ,layer = layui.layer
+    ,upload = layui.upload
+    ,element = layui.element
+    ,$ = layui.jquery;
+
+    //自定义验证规则
+  /*  form.verify({
+        uploadsize: [/^\+?[1-9][0-9]*$/, '请输入大于或等于0整数'],
+    });*/
+    var seytem = {$system};
+    form.val("form-system", seytem);
+    $('#logos').attr('src',"__PUBLIC__"+seytem.logo);
+    layer.photos({
+        photos: '#layer-photos-demo'
+        ,anim: 3 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+    });
+    //普通图片上传
+    var uploadInst = upload.render({
+        elem: '#logoBtn'
+        ,url: '{:url("Upfiles/upimages")}'
+        ,accept: 'images'
+        ,before: function(obj){
+            //预读本地文件示例，不支持ie8
+            this.data={files:'logo'};//关键代码
+           // obj.preview(function(index, file, result){
+               // $('#logos').attr('src', result); //图片链接（base64）
+               // $("#logos").css({"width":110+"px","height":110+"px"});
+           // });
+        }
+        ,progress: function(e , percent) {
+            $("#jin").show();
+            element.progress('progressBar',percent  + '%');
+        }
+        ,done: function(res){
+            //上传成功
+            if(res.code>0){
+                $('#logos').show();
+                $('#logos').attr('src', '__PUBLIC__'+res.src); //图片链接（base64）
+                $("#logos").css({"width":110+"px","height":110+"px"});
+                $('#logo').val(res.src);
+            }else{
+                //如果上传失败
+                $("#jin").hide();
+                layer.msg('上传失败');
+                return false;
+            }
+        }
+        ,error: function(){
+            //演示失败状态，并实现重传
+            $("#jin").hide();
+            layer.msg('上传失败');
+            return false;
+        } 
+    });
+
+    $('#upload').click(function(){
+        var uploadsize = $('#uploadsize').val();
+        if(!(/^\+?[1-9][0-9]*$/).test(uploadsize)){
+            $("#uploadsize").css("border","1px solid red");
+            layer.msg("上传大小请输入大于或等于0整数");
+            return false;
+        }
+    })
+
+    //自定义验证规则
+    form.verify({
+        limit: function(value){
+            var limits = value%10;
+            if(limits && (value < 0 || limits != 0)){
+                return '分页数量格式错误,请输入10的倍数';
+            }
+        }
+    });
+
+    //监听提交
+    form.on('submit(sys)', function(data){
+        loading =layer.load(1, {shade: [0.1,'#fff']});
+        $.post(url,data.field,function(res){
+            layer.close(loading);
+            if(res.code == 1){
+                layer.msg(res.msg,function () { 
+                    window.location.href = res.url;
+                });
+            }else if(res.code == 0){
+                layer.msg(res.msg); 
+           }else{
+                layer.msg('你无操作权限！'); 
+           }
+        },'json')
+        return false;
+    }); 
+});
+</script>

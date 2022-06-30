@@ -1,0 +1,52 @@
+{include file="common/header"/}
+<div class="fadeInUp animated headalert"><br>
+    <div class="layui-anim layui-anim-up">
+        <form class="layui-form">
+            <div class="layui-container">
+                <div class="layui-row">
+                    <input type="hidden" value="{$info.id}" name="id">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">URL地址</label>
+                        <div class="layui-input-4">
+                            <input type="text" name="datas" placeholder="请输入URL地址" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button type="submit" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="upgrades">编辑</button>
+                            <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{include file="common/footer"/}
+<script>
+    var url = '{:url("upgrades")}';
+    layui.use(['form','layer'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,$ = layui.jquery;
+        //监听提交
+        form.on('submit(upgrades)', function(data){
+            var urls = data.field.datas;
+            if(urls == ""){
+                layer.msg("URL地址不能为空!");
+                return false;
+            }
+            $.post(url,data.field,function(res){
+                if(res.code == 1){
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.parent.location.reload();//修改成功后刷新父界面
+                    }, 1000);
+                }else{
+                    layer.msg(res.msg);
+                }
+            },'json')
+            return false;
+        });
+    });
+</script>

@@ -1,0 +1,208 @@
+{include file="common/head"/}
+<div class="layui-page-header headers">
+    <div class="pagewrap">
+        <span class="layui-breadcrumb">
+          <a href="{:url('index/index')}">首页</a>
+          <a href="javascript:;">{$authruleinfo.pid}</a>
+          <a><cite>{$authruleinfo.id}</cite></a>
+        </span>
+        <a href="javascript:location.replace(location.href);" style="float:right" class="layui-btn layui-btn-blue refreshs"><i class="fa fa-history falocation" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="layui-row">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <blockquote class="layui-elem-quote layui-elem-quote-blue">
+               数据库中共有 <span class="count" style="color: #177ce3;font-weight: bold;"></span> 张表，共计 <span class="size" style="color: #177ce3;font-weight: bold;"></span>
+                <a href="javascript:void(0)" tipsmsg="备份" id="backUp" class="layui-btn layui-btns layui-btn-blue onmousemovebtns"><i class="fa fa-copy" aria-hidden="true"></i>&nbsp;备份</a>
+                <a href="javascript:void(0)" tipsmsg="优化" id="optimize" class="layui-btn layui-btns layui-btn-green onmousemovebtns"><i class="fa fa-tree" aria-hidden="true"></i>&nbsp;优化</a>
+                <a href="javascript:void(0)" tipsmsg="修复"  id="repair" class="layui-btn layui-btns layui-btn-red onmousemovebtns"><i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;修复</a>
+            </blockquote>
+            <table class="layui-table" id="list" lay-filter="list"></table>
+        </div>
+    </div>
+</div>
+{include file="common/foot"/}
+<script type="text/html" id="statu">
+    <input type="checkbox" name="statu" lay-skin="switch" lay-text="可用|禁止" value="{{d.id}}" lay-filter="statu" {{ d.statu == 1 ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="action">
+    <a lay-event="backUp" tipsmsg="备份" class="layuimsg">
+        <button class="layui-btn layui-btns layui-btn-blue layui-btn-xs">
+            <i class="fa fa-copy" aria-hidden="true"></i>
+        </button>
+    </a> 
+    <a lay-event="optimize" tipsmsg="优化" class="layuimsg">
+        <button class="layui-btn layui-btns layui-btn-green layui-btn-xs">
+            <i class="fa fa-tree" aria-hidden="true"></i>
+        </button>
+    </a>
+    <a lay-event="repair" tipsmsg="修复" class="layuimsg">
+        <button class="layui-btn layui-btns layui-btn-red layui-btn-xs">
+            <i class="fa fa-wrench" aria-hidden="true"></i>
+        </button>
+    </a>
+</script>
+<script>
+    layui.use(['table','form','element','layer'], function() {
+        var table = layui.table,form = layui.form,element = layui.element,layer = layui.layer,$ = layui.jquery;
+        var tableIn = table.render({
+            elem: '#list',
+            url: '{:url("database")}',
+            method: 'post',
+            cols: [[
+                {checkbox:true, align: 'center', width: 80},
+                {field: 'Name', title: '数据库表', width: 200},
+                {field: 'Rows', title: '记录条数', width: 130,sort: true,align:'center'},
+                {field: 'size', title: '占用空间', width: 150,templet:'#size',sort: true,align:'center'},
+                {field: 'Engine', title: '类型', width: 110},
+                {field: 'Collation', title: '编码', width: 140,align:'center'},
+                {field: 'Create_time', title: '创建时间', width: 180,sort: true,align:'center'},
+                {field: 'Comment', title: '说明', width: 180},
+                {title: '操作',width: 130,align: 'center', toolbar: '#action',fixed: 'right'},
+            ]],
+            done:function(res){
+                onmousemoves();
+                $('.count').html(res.tableNum);
+                $('.size').html(res.total);
+            }
+        });
+
+        //复选框选中的个数
+        table.on('checkbox(list)', function (obj) {
+            var checkStatus = table.checkStatus('list');
+            var data = checkStatus.data;
+            layer.msg('选中了：'+ data.length + ' 个');
+        });
+        
+        //备份
+        $('#backUp').click(function(){
+            var obj = $(this);
+            var checkStatus = table.checkStatus('list'); //test即为参数id设定的值
+            var a = [];
+            $(checkStatus.data).each(function(i,o){
+                a.push(o.Name);
+            });
+            if (a == ""){
+                layer.msg("请选择内容进行备份");
+                return false;
+            }
+            obj.addClass('layui-btn-disabled');
+            obj.html('备份进行中...');
+            $.post("{:url('backup')}",{tables:a},function(data){
+                if(data.code==1){
+                    layer.msg(data.msg,function(){
+                        tableIn.reload();
+                    });
+                }else if(data.code==0){
+                    layer.msg(data.msg);
+                }else{
+                    layer.msg('你无操作权限！');
+                }
+                obj.removeClass('layui-btn-disabled');
+                obj.html('备份');
+            });
+        });
+        
+        //优化
+        $('#optimize').click(function(){
+            var obj = $(this);
+            var checkStatus = table.checkStatus('list'); //test即为参数id设定的值
+            var a = [];
+            $(checkStatus.data).each(function(i,o){
+                a.push(o.Name);
+            });
+            if (a == ""){
+                layer.msg("请选择内容进行优化");
+                return false;
+            }
+            obj.addClass('layui-btn-disabled');
+            obj.html('优化进行中...');
+            $.post("{:url('optimize')}",{tables:a},function(data){
+                if(data.code==1){
+                    layer.msg(data.msg,function(){
+                        tableIn.reload();
+                    });
+                }else if(data.code==0){
+                    layer.msg(data.msg);
+                }else{
+                    layer.msg('你无操作权限！');
+                }
+                obj.removeClass('layui-btn-disabled');
+                obj.html('优化');
+            });
+        });
+        
+        //修复
+        $('#repair').click(function(){
+            var obj = $(this);
+            var checkStatus = table.checkStatus('list'); //test即为参数id设定的值
+            var a = [];
+            $(checkStatus.data).each(function(i,o){
+                a.push(o.Name);
+            });
+            if (a == ""){
+                layer.msg("请选择内容进行修复");
+                return false;
+            }
+            obj.addClass('layui-btn-disabled');
+            obj.html('修复进行中...');
+            $.post("{:url('repair')}",{tables:a},function(data){
+                if(data.code==1){
+                    layer.msg(data.msg,function(){
+                        tableIn.reload();
+                    });
+                }else if(data.code==0){
+                    layer.msg(data.msg);
+                }else{
+                    layer.msg('你无操作权限！');
+                }
+                obj.removeClass('layui-btn-disabled');
+                obj.html('修复');
+            });
+        })
+
+        table.on('tool(list)', function(obj) {
+            var data = obj.data;
+            var Name = [data.Name];
+            if (obj.event === 'backUp') {
+                $.post("{:url('backup')}",{tables:Name},function(data){
+                    if(data.code==1){
+                        layer.msg(data.msg,function(){
+                            tableIn.reload();
+                        });
+                    }else if(data.code==0){
+                        layer.msg(data.msg);
+                    }else{
+                        layer.msg('你无操作权限！');
+                    }
+                });
+            }else if(obj.event === 'optimize'){
+                $.post("{:url('optimize')}",{tables:Name},function(data){
+                    if(data.code==1){
+                        layer.msg(data.msg,function(){
+                            tableIn.reload();
+                        });
+                    }else if(data.code==0){
+                        layer.msg(data.msg);
+                    }else{
+                        layer.msg('你无操作权限！');
+                    }
+                }); 
+            }else{
+                $.post("{:url('repair')}",{tables:Name},function(data){
+                    if(data.code==1){
+                        layer.msg(data.msg,function(){
+                            tableIn.reload();
+                        });
+                    }else if(data.code==0){
+                        layer.msg(data.msg);
+                    }else{
+                        layer.msg('你无操作权限！');
+                    }
+               }); 
+            }
+        });
+    });
+</script>

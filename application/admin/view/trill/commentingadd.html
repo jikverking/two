@@ -1,0 +1,58 @@
+{include file="common/header"/}
+<div class="fadeInUp animated headalert"><br>
+    <div class="layui-anim layui-anim-up">
+        <form class="layui-form">
+            <div class="layui-container">
+                <div class="layui-row">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">分组名称</label>
+                        <div class="layui-input-4">
+                            <input type="text" name="name" autocomplete="off" placeholder="请输入分组名称" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="statu" value="1" title="启用" lay-verify="statu" checked>
+                            <input type="radio" name="statu" value="0" lay-verify="statu" title="禁止">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button type="submit" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="commentingadd">添加</button>
+                            <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{include file="common/footer"/}
+<script>
+    var url = '{:url("commentingadd")}';
+    layui.use(['form','layer','element'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,$ = layui.jquery;
+        //监听提交
+        form.on('submit(commentingadd)', function(data){
+            var name = data.field.name;
+            if(name == ""){
+                layer.msg("分组名称不能为空");
+                return false;
+            }
+            $.post(url,data.field,function(res){
+                if(res.code == 1){
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.parent.location.reload();//修改成功后刷新父界面
+                    }, 1000);
+                }else{
+                    layer.msg(res.msg);
+                }
+            },'json')
+            return false;
+        });
+    });
+</script>

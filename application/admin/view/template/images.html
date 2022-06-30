@@ -1,0 +1,129 @@
+{include file="common/head"/}
+<style>
+    a{text-decoration: none;}
+    .table-list ul.pic { list-style: none;cursor: pointer;}
+    .table-list ul.pic li {float:left;position:relative;margin:5px 10px;_margin:5px 8px;text-align: center;}
+    .table-list ul.pic li span { width:82px;height:82px;display: block;}
+    .table-list ul.pic li span a {border:1px solid #eee;width:80px;height:80px;*font-size: 75px;display: table-cell; vertical-align: middle; overflow: hidden;}
+    .table-list ul.pic li img  {max-height:80px;max-width:80px ;_width:80px;_height:80px;}
+    .table-list ul.pic li  b {display:block;line-height:20px;height:20px;font-weight:normal;width:82px;overflow:hidden;}
+    .table-list ul.pic li  a em {position:absolute;right:-10px;top:-10px;font-style: normal;}
+    .table-list ul.pic li  a em{color: #f00;}
+    .close{
+         width:22px;
+          height:22px;
+        background:url(__STATIC__/admin/images/close.png) no-repeat;
+    }
+    .close:hover{background:url(__STATIC__/admin/images/close1.png) no-repeat;}
+</style> 
+<div class="layui-page-header headers">
+    <div class="pagewrap">
+        <span class="layui-breadcrumb">
+          <a href="{:url('index/index')}">首页</a>
+          <a href="javascript:;">{$authruleinfo.pid}</a>
+          <a><cite>{$authruleinfo.id}</cite></a>
+        </span>
+        <a href="javascript:location.replace(location.href);" style="float:right" class="layui-btn layui-btn-blue refreshs"><i class="fa fa-history falocation" aria-hidden="true"></i>
+        </a>
+    </div>
+</div> 
+<div class="layui-row">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="table-list">
+                <ul class="pic">
+                    {if condition="$leve"}
+                    <li>
+                        <span><a href="{:url('images')}?folder={$uppath}"><img src="__STATIC__/admin/images/upback.gif"></a></span>
+                        <b style="margin-top: 10px;"><font color="#187EE3" onclick="window.location.href='{:url('images')}?folder={$uppath}'">返回上一级</font></b></li>
+                    {/if}
+                    {volist name="folders" id="vo"}
+                    <li>
+                        <span  style="background: #f0f2f5;"><a href="{:url('images')}?folder={:input('folder')}{$vo['filename']}/"><img src="__STATIC__/admin/images/folder.gif"></a></span>
+                        <b style="margin-top: 10px;" onclick="window.location.href='{:url('images')}?folder={:input('folder')}{$vo['filename']}'">{$vo.filename}</b>
+                        <!-- <em class="close">
+                            <a href="javascript:confirm_delete('{:input('folder')}','{$vo.filename}')" ><i class="layui-icon" style="font-size: 22px">&#x1007;</i></a>
+                        </em> -->
+                        <a href="javascript:confirm_delete('{:input('folder')}','{$vo.filename}')" title="删除">
+                            <em class="close">   
+                            </em>
+                        </a>
+                       <!--  <em>
+                            <a href="javascript:confirm_delete('{:input('folder')}','{$vo.filename}')">删除</a>
+                        </em> -->
+                    </li>
+                    {/volist}
+                    <div id="layer-photos-demo" class="layer-photos-demo">
+                    {volist name="files" id="vo"}
+                    <li>
+                        <span>
+
+                            <!--<a href="__PUBLIC__/uploads/{:input('folder')}{$vo.filename}" target="_blank" >-->
+                                {if condition="!empty($vo['ico'])"}
+                                    {if condition="explodes($vo.filename) eq 'txt'"}
+                                        <img src="__STATIC__/admin/images/disr.png">
+                                    {else /}
+                                        <img src="__PUBLIC__/uploads/ext/{$vo['ext']}.png">
+                                    {/if}
+                                {else /}
+                                <img src="__PUBLIC__/uploads/{:input('folder')}{$vo.filename}" >
+                                {/if}
+
+                        <!--    </a>-->
+                        </span>
+                   <!--     <b  style="margin-top: 10px;">
+                            <a href="__PUBLIC__/uploads/{:input('folder')}{$vo.filename}" target="_blank">{$vo.filename}</a>
+                        </b>-->
+                        <b  style="margin-top: 10px;">
+                            {$vo.filename}
+                        </b>
+                        <a href="javascript:confirm_delete('{:input("folder")}','{$vo.filename}')" title="删除">
+                            <em class="close">   
+                            </em>
+                        </a>
+                    </li>
+                    {/volist}
+                    </div>
+                </ul>
+            </div>
+            <table class="layui-table"></table>
+        </div>
+    </div>
+</div>
+
+{include file="common/foot"/}
+<script>
+layui.use(['form','layer','element'], function(){    
+     var form = layui.form
+    ,layer = layui.layer
+    ,element = layui.element
+    ,$ = layui.jquery;
+
+    layer.photos({
+        photos: '#layer-photos-demo'
+        ,anim: 3 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+    });
+
+});
+function confirm_delete(folder,filename) {
+    layer.confirm('你确定要删除吗？', {icon: 3,skin: 'layui-layer-lan',anim: 4,title:'删除'}, function (index) {
+        layer.close(index);
+        var loading = layer.load(1, {shade: [0.1, '#fff']});
+        $.post("{:url('imgDel')}",{folder:folder,filename:filename},function(data){
+            layer.close(loading);
+            if(data.code==1){
+                layer.msg(data.msg, function(index){
+                    layer.close(index);
+                    location.replace(location.href);
+                });
+            }else if(data.code==0){
+                layer.msg(data.msg, function(index){
+                    layer.close(index);
+                });
+            }else{
+                layer.msg('你无操作权限！')
+            }
+        })
+    });
+}
+</script>

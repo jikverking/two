@@ -1,0 +1,91 @@
+{include file="common/head"/}
+<div class="layui-page-header headers">
+    <div class="pagewrap">
+        <span class="layui-breadcrumb">
+          <a href="{:url('index/index')}">首页</a>
+          <a href="javascript:;">{$authruleinfo.pid}</a>
+          <a><cite>{$authruleinfo.id}</cite></a>
+        </span>
+        <a href="javascript:location.replace(location.href);" style="float:right" class="layui-btn layui-btn-blue refreshs"><i class="fa fa-history falocation" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="layui-row">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <table class="layui-table" id="list" lay-filter="list"></table>
+        </div>
+    </div>
+</div>
+{include file="common/foot"/}
+<script type="text/html" id="action">
+    <a tipsmsg="恢复" class="layuimsg" lay-event="recover">
+    <button class="layui-btn layui-btns layui-btn-blue layui-btn-xs">
+      <i class="layui-icon">&#xe669;</i>
+    </button>
+    </a>
+    <a tipsmsg="下载" class="layuimsg" href="{:url('downFile')}?time={{d.time}}" >
+    <button class="layui-btn layui-btns layui-btn-green layui-btn-xs greens">
+      <i class="layui-icon">&#xe601;</i>
+    </button>
+    </a>
+    <a tipsmsg="删除" class="layuimsg" lay-event="del">
+    <button class="layui-btn layui-btn-xs layui-btns layui-btn-red">
+      <i class="layui-icon">&#xe640;</i>
+    </button>
+    </a>
+</script>
+<script>
+    layui.use(['table','form','element','layer'], function() {
+        var table = layui.table,form = layui.form,element = layui.element,layer = layui.layer,$ = layui.jquery;
+        table.render({
+            elem: '#list'
+            ,url: '{:url("restore")}'
+            ,method:'post'
+            ,cols: [[
+                {field:'name', title: '文件名称', width:250}
+                ,{field:'size', title: '文件大小', width:200,sort:true}
+                ,{field:'addtime', title: '备份时间', width:170,sort:true,align:'center'}
+                ,{width:130, align:'center', toolbar: '#action',title:'操作',fixed: 'right'}
+            ]]
+            ,done:function(msg){
+                onmousemoves();
+            }
+        });
+        table.on('tool(list)', function(obj) {
+            var data = obj.data;
+            if (obj.event === 'recover') {
+                layer.confirm('确认要导入数据吗？',{icon: 0,skin: 'layui-layer-lan',anim: 4}, function (index) {
+                    loading = layer.load(1, {shade: [0.1, '#fff']});
+                    $.post("{:url('import')}",{time:data.time},function(res){
+                        layer.close(loading);
+                        if(res.code==1){
+                            layer.msg(res.msg);
+                        }else if(res.code==0){
+                            layer.msg(res.msg);
+                        }else{
+                            layer.msg('你无操作权限!');
+                        }
+                    });
+                    layer.close(index);
+                });
+            }else if(obj.event === 'del'){
+                layer.confirm('确认要删除该备份文件吗？', {icon: 3,skin: 'layui-layer-lan',anim: 4}, function (index) {
+                    loading = layer.load(1, {shade: [0.1, '#fff']});
+                    $.post('{:url("delSqlFiles")}',{time: data.time}, function (res) {
+                        layer.close(loading);
+                        if (res.code == 1) {
+                            layer.msg(res.msg);
+                            obj.del();
+                        }else if(res.code==0){
+                            layer.msg(res.msg);
+                        }else{
+                            layer.msg('你无操作权限!');
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+    });
+</script>

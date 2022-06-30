@@ -1,0 +1,105 @@
+{include file="common/header"/}
+<div class="fadeInUp animated headalert">
+    <blockquote class="layui-elem-quote layui-elem-quote-blue" style="margin:20px;">
+       <span>
+            &nbsp;&nbsp;&nbsp;1、《控/方》：意思是 控制器/方法; 例如 Sys/sysList<br/>
+            &nbsp;&nbsp;&nbsp;2、图标名称为左侧导航栏目的图标样式，具体可查看<a href="http://www.fontawesome.com.cn/" target="_blank" style="color:#177ce3"> Font Awesome </a>图标
+        </span>
+    </blockquote>
+    <br>
+    <div class="layui-anim layui-anim-up">
+        <form class="layui-form" method="post">
+          <input type="hidden" name="id" value="{:input('get.id')}">
+            <div class="layui-container">
+                <div class="layui-row">
+                    <div class="layui-form-item">
+                         <label class="layui-form-label">群分组列表</label>
+                         <div class="layui-input-2">
+                             <select name="pid" lay-filter="grouping">
+                                 {if $info.pid eq 0}
+                                     <option value="0" selected="selected">默认顶级</option>
+                                     {volist name="admin_rule" id="vo"}
+                                     <option value="{$vo.id}">{$vo.lefthtml}{$vo.title}</option>
+                                     {/volist}
+                                 {else/}
+                                 <option value="0">默认顶级</option>
+                                 {volist name="admin_rule" id="vo"}
+                                     {if condition="$vo.id eq $info.pid"}
+                                     <option value="{$vo.id}" selected="selected">{$vo.lefthtml}{$vo.title}</option>
+                                     {else/}
+                                     <option value="{$vo.id}">{$vo.lefthtml}{$vo.title}</option>
+                                     {/if}
+                                     {/volist}
+                                 {/if}
+                             </select>
+                         </div>
+                     </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">权限名称</label>
+                      <div class="layui-input-6">
+                        <input type="text" name="title" lay-verify="required" placeholder="请输入权限名称" class="layui-input" value="{$info.title}">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">控制器/方法</label>
+                      <div class="layui-input-5">
+                         <input type="text" name="href" lay-verify="required" placeholder="请输入控制器/方法" class="layui-input" value="{$info.href}">
+                          <div class="layui-form-mid layui-word-aux">
+                              <span style="color: red">*</span> 首字母大写，允许2-80字节，允许字母数字
+                          </div>
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">图标</label>
+                      <div class="layui-input-5">
+                        <input type="text" name="icon" placeholder="请输入图标名称" class="layui-input" value="{$info.icon}">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">排序</label>
+                      <div class="layui-input-inline">
+                        <input type="text" name="sort" placeholder="请输入排序编号" class="layui-input" value="{$info.sort}">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <div class="layui-input-block">
+                        <button type="submit" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="ruleedit">编辑</button>
+                        <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+                      </div>
+                    </div>
+              </div>
+            </div>
+        </form>
+    </div>   
+</div> 
+{include file="common/footer"/}
+<script>
+var url = '{:url("ruleedit")}';
+layui.use(['form','layer','element'], function(){
+    var form = layui.form
+    ,layer = layui.layer
+    ,element = layui.element
+    ,$ = layui.jquery;
+    //监听提交
+    form.on('submit(ruleedit)', function(data){
+        var href = data.field.href;
+        if(!(/^[A-Z][a-zA-Z0-9]{1,79}$/).test(href)){
+            layer.msg("控制器/方法格式错误");
+            return false;
+        };
+        $.post(url,data.field,function(res){
+            if(res.code == 1){
+                layer.msg(res.msg);
+                setTimeout(function(){
+                    window.parent.location.reload();
+                }, 1000);
+            }else{
+                layer.msg(res.msg);
+            }
+        },'json')
+        return false;
+    }); 
+});
+</script>
+</body>
+</html>

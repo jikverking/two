@@ -1,0 +1,248 @@
+{include file="common/head" /}
+<style>
+    textarea{
+        font-family: "微软雅黑" !important;
+        padding: 10px;
+    }
+</style>
+<div class="layui-row layui-col-space20">
+    <div class="layui-col-sm12 layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-tab layui-tab-brief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">账号管理</li>
+                    <li>活跃度</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div id="container" style="width: 100%;height: 400px;"></div>
+                    </div>
+                    <div class="layui-tab-item">
+                        ddd
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{include file="common/foot" /}
+<script type="text/javascript" src="__STATIC__/common/js/echarts.min.js"></script>
+<script type="text/javascript">
+    var dom = document.getElementById("container");
+    var myChart = echarts.init(dom);
+    var app = {};
+    option = null;
+    var posList = [
+        'left', 'right', 'top', 'bottom',
+        'inside',
+        'insideTop', 'insideLeft', 'insideRight', 'insideBottom',
+        'insideTopLeft', 'insideTopRight', 'insideBottomLeft', 'insideBottomRight'
+    ];
+
+    app.configParameters = {
+        rotate: {
+            min: -90,
+            max: 90
+        },
+        align: {
+            options: {
+                left: 'left',
+                center: 'center',
+                right: 'right'
+            }
+        },
+        verticalAlign: {
+            options: {
+                top: 'top',
+                middle: 'middle',
+                bottom: 'bottom'
+            }
+        },
+        position: {
+            options: echarts.util.reduce(posList, function (map, pos) {
+                map[pos] = pos;
+                return map;
+            }, {})
+        },
+        distance: {
+            min: 0,
+            max: 100
+        }
+    };
+
+    app.config = {
+        rotate: 90,
+        align: 'left',
+        verticalAlign: 'middle',
+        position: 'insideBottom',
+        distance: 15,
+        onChange: function () {
+            var labelOption = {
+                normal: {
+                    rotate: app.config.rotate,
+                    align: app.config.align,
+                    verticalAlign: app.config.verticalAlign,
+                    position: app.config.position,
+                    distance: app.config.distance
+                }
+            };
+            myChart.setOption({
+                series: [{
+                    label: labelOption
+                }, {
+                    label: labelOption
+                }, {
+                    label: labelOption
+                }, {
+                    label: labelOption
+                }]
+            });
+        }
+    };
+
+
+    var labelOption = {
+        normal: {
+            show: true,
+            position: app.config.position,
+            distance: app.config.distance,
+            align: app.config.align,
+            verticalAlign: app.config.verticalAlign,
+            rotate: app.config.rotate,
+            formatter: '{c}  {name|{a}}',
+            fontSize: 16,
+            rich: {
+                name: {
+                    textBorderColor: '#fff'
+                }
+            }
+        }
+    };
+
+    option = {
+       /* backgroundColor: '#f0f2f5',
+        title: {
+            left: 'center',
+            textStyle: {
+                color: '#eee'
+            }
+        },*/
+        color: ['#003366', '#006699', '#4cabce', '#e5323e'],
+        /*title: {
+            text: '账号管理',
+            x:'center',
+            y:'bottom',
+
+        },*/
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data: ['小红书', '百度', '快手', '抖音']
+        },//侧边栏显示
+        toolbox: {
+            show: true,
+            orient: 'vertical',
+            left: 'right',
+            top: 'center',
+            feature: {
+                mark: {show: true},
+                dataView: {show: true, readOnly: false},
+                magicType: {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                restore: {show: true},
+                saveAsImage: {show: true}
+            }
+        },
+        calculable: true,
+        xAxis: [
+            {
+                type: 'category',
+                axisTick: {show: false},
+                data: [
+                    {volist name="list" id="vo"}
+                    '{$vo.time}',
+                    {/volist}
+                ],
+                /*axisLabel: {
+                    formatter: function(value) {
+                        var res = value;
+                        if(widths < 750) {
+                            value.substring(0, 0);
+                            res = "";
+                        }
+                        return res;
+
+                    }
+                }*/
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value'
+            }
+        ],
+        series: [
+            {
+                name: '小红书',
+                type: 'bar',
+                /*barGap: 0,*/
+               /* label: labelOption,*/
+                /*label: {
+                    normal: {
+                        show: true,
+                        position: 'top'
+                    }
+                },*/
+               /* markPoint: {
+                    data: [
+                        {type: 'max', name: '最大值'},
+                        {type: 'min', name: '最小值'}
+                    ]
+                },*/
+/*                markLine: {
+                    data: [
+                        {type: 'average', name: '平均值'}
+                    ]
+                },*/
+                data:[
+                    {volist name="list" id="vo"}
+                    {$vo.count},
+                    {/volist}
+                ]
+            },
+            {
+                name: '百度',
+                type: 'bar',
+                data:[
+                    {volist name="list" id="vo"}
+                    {$vo.count},
+                    {/volist}
+                ]
+            },
+            {
+                name: '快手',
+                type: 'bar',
+                data:[
+                    {volist name="list" id="vo"}
+                    {$vo.count},
+                    {/volist}
+                ]
+            },
+            {
+                name: '抖音',
+                type: 'bar',
+                data:[
+                    {volist name="list" id="vo"}
+                    {$vo.count},
+                    {/volist}
+                ]
+            }
+        ]
+    };
+    if (option && typeof option === "object") {
+        myChart.setOption(option, true);
+    }
+</script>

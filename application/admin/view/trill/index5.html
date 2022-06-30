@@ -1,0 +1,409 @@
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__STATIC__/common/layui/css/layui.css">
+    &lt;!&ndash; 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 &ndash;&gt;
+    <style>
+        .layui-table-view .layui-table[lay-size="sm"] .layui-select-title .layui-input {
+            height: 28px;
+            margin-top: -8px;
+            font-size: 6px;
+        }
+
+        .layui-table-view .layui-table[lay-size="sm"] .layui-form-select dl dt, .layui-table-view .layui-form-select dl dd {
+            line-height: 28px;
+        }
+
+        .layui-table-view .layui-table[lay-size="sm"] .layui-form-select dl {
+            top: 28px;
+        }
+
+        .layui-table-view .layui-table .layui-select-title .layui-input {
+            height: 32px;
+            margin-top: -3px;
+        }
+
+        .layui-table-view .layui-table .layui-form-select dl dt, .layui-table-view .layui-form-select dl dd {
+            line-height: 32px;
+        }
+
+        .layui-table-view .layui-table .layui-form-select dl {
+            top: 32px;
+        }
+
+        .layui-table-view .layui-table[lay-size="lg"] .layui-select-title .layui-input {
+            height: 38px;
+            margin-top: 0;
+        }
+
+        .layui-table-view .layui-table[lay-size="lg"] .layui-form-select dl dt, .layui-table-view .layui-form-select dl dd {
+            line-height: 38px;
+        }
+
+        .layui-table-view .layui-table[lay-size="lg"] .layui-form-select dl {
+            top: 38px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-xs6">
+            <button class="layui-btn getCheckedData" data-table="grid1">获得表格1选中行</button>
+            <span style="margin-left: 20px;color: pink;">id在[1,2,3,5,9,10]的不可选</span>
+            <table id="grid1" lay-filter="grid1" class="tableWithoutHead" lay-skin="nob"></table>
+        </div>
+        <div class="layui-col-xs6">
+            <button class="layui-btn getCheckedData" data-table="grid2">获得表格2选中行</button>
+            <span style="margin-left: 20px;color: pink;">id偶数才显示</span>
+            <table id="grid2" lay-filter="grid2" class="tableWithoutHead" lay-skin="nob"></table>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="myCheckbox">
+    {{# if(d.id%2 == 0) {  if(d.LAY_CHECKED) { var checked = 'checked=""';}  }}
+    <input type="checkbox" lay-skin="primary" name="layTableCheckbox" {{checked||''}}  >
+    {{# } else { layui.table.cache.grid2[d.LAY_TABLE_INDEX].checkDisabled=true;} }}
+
+</script>
+
+<script src="__STATIC__/common/layui/layui.js"></script>
+&lt;!&ndash; 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 &ndash;&gt;
+
+<script>
+
+    layui.use(['table', 'layer', 'element', 'jquery', 'form'], function (table, layer, element, $, form) {
+        // data模式
+        var jsonData = [{
+            id: 1,
+            city: 20000,
+        }, {
+            id: 2,
+            city: 20001
+        }, {
+            id: 3,
+            city: 20001
+        }, {
+            id: 4,
+            city: 20001
+        }, {
+            id: 5,
+            city: 20001
+        }, {
+            id: 6,
+            city: 20001
+        }, {
+            id: 7,
+            city: 20001
+        }, {
+            id: 8,
+            city: 20001
+        }, {
+            id: 9,
+            city: 20001
+        }, {
+            id: 10,
+            city: 20001
+        }, {
+            id: 11,
+            city: 20001
+        }];
+
+        // 监听修改update到表格中
+        form.on('select(testSelect)', function (data) {
+            var elem = $(data.elem);
+            var trElem = elem.parents('tr');
+            var tableId = trElem.parents('.layui-table-view').prev().attr('id');
+            var tableData = table.cache[tableId];
+            // 更新到表格的缓存数据中，才能在获得选中行等等其他的方法中得到更新之后的值
+            tableData[trElem.data('index')][elem.attr('name')] = data.value;
+            // 其他的操作看需求 TODO
+        });
+
+        $('.getCheckedData').click(function () {
+            // 表格id
+            var tableId = $(this).data('table');
+            // 验证一下下拉选择之后有没有作用到表格缓存数据
+            var checkStatus = table.checkStatus(tableId);
+            layer.alert(
+                [
+                    '选中的数据：' + JSON.stringify(checkStatus.data),
+                    '总条数：' + checkStatus.data.length,
+                    '是否全选：' + checkStatus.isAll
+                ].join('<br>')
+            );
+        });
+
+        table.render({
+            elem: '#grid1',
+            width: 400,
+            height: 400,
+            // data: jsonData1,
+            data: $.extend(true, [], jsonData),
+            page: {},
+            done: function (res, curr, count) {
+                var tableElem = this.elem.next('.layui-table-view');
+                count || tableElem.find('.layui-table-header').css('overflow', 'auto');
+                layui.each(tableElem.find('select'), function (index, item) {
+                    var elem = $(item);
+                    elem.val(elem.data('value')).parents('div.layui-table-cell').css('overflow', 'visible');
+                });
+
+                // 假设1,2,3,5,9,10不能选
+                var disArr = [1,2,3,5,9,10];
+                layui.each(table.cache.grid1, function (index, data) {
+                    if (disArr.indexOf(data.id) !== -1) {
+                        tableElem.find('tr[data-index="'+index+'"]').find('input[name="layTableCheckbox"]')
+                            .attr({name:'layTableCheckbox_disabled', disabled: 'disabled'});
+                        data.checkDisabled = true;
+                    }
+                });
+
+                form.render();
+            },
+            size: 'sm',
+            cols: [[ //表头
+                {type: 'checkbox', fixed: true},
+                {field: 'id', title: 'ID'},
+                {
+                    field: 'city',
+                    title: '<a href="//baidu.com">城市</a>',
+                    align: 'center',
+                    width: 200,
+                    templet: function (d) {
+                        // 模板的实现方式也是多种多样，这里简单返回固定的
+                        return '<select name="city" lay-filter="testSelect" lay-verify="required" data-value="' + d.city + '" >\n' +
+                            '        <option value=""></option>\n' +
+                            '        <option value="18000">北京</option>\n' +
+                            '        <option value="20000">上海</option>\n' +
+                            '        <option value="20001">广州</option>\n' +
+                            '        <option value="20002">深圳</option>\n' +
+                            '        <option value="20003">杭州</option>\n' +
+                            '      </select>';
+                    }
+                }
+            ]]
+        });
+
+        table.render({
+            elem: '#grid2',
+            width: 400,
+            height: 400,
+            // data: jsonData2,
+            data: $.extend(true, [], jsonData),
+            page: {},
+            done: function (res, curr, count) {
+                var tableElem = this.elem.next('.layui-table-view');
+                count || tableElem.find('.layui-table-header').css('overflow', 'auto');
+                layui.each(tableElem.find('select'), function (index, item) {
+                    var elem = $(item);
+                    elem.val(elem.data('value')).parents('div.layui-table-cell').css('overflow', 'visible');
+                });
+                form.render();
+            },
+            size: 'sm',
+            cols: [[ //表头
+                // {type: 'checkbox', fixed: true},
+                {
+                    fixed: true
+                    , title: '<input type="checkbox" name="layTableCheckbox" lay-skin="primary" lay-filter="layTableAllChoose">'
+                    , width: 48
+                    // id偶数才显示
+                    , templet: '#myCheckbox'
+                },
+                {field: 'id', title: 'ID'},
+                {
+                    field: 'city',
+                    title: '<a href="//baidu.com">城市</a>',
+                    align: 'center',
+                    width: 200,
+                    templet: function (d) {
+                        // 模板的实现方式也是多种多样，这里简单返回固定的
+                        return '<select name="city" lay-filter="testSelect" lay-verify="required" data-value="' + d.city + '" >\n' +
+                            '        <option value=""></option>\n' +
+                            '        <option value="18000">北京</option>\n' +
+                            '        <option value="20000">上海</option>\n' +
+                            '        <option value="20001">广州</option>\n' +
+                            '        <option value="20002">深圳</option>\n' +
+                            '        <option value="20003">杭州</option>\n' +
+                            '      </select>';
+                    }
+                }
+            ]]
+        });
+    });
+</script>
+
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>测试table的checkbox单选</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__STATIC__/common/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+<div class="layui-form">
+    <span class="layui-btn layui-btn-primary" lay-event="alertCheckboxStatus" data-table="testTable">获得选中数据</span>
+    <div class="layui-input-inline">
+        <input type="checkbox" name="switch" lay-text="单选|多选" lay-filter="tabel_control" lay-skin="switch">
+    </div>
+</div>
+<table id="testTable" lay-filter="testTable"></table>
+
+<script src="__STATIC__/common/layui/layui.js"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+
+<script>
+    layui.use(['table', 'jquery', 'form'], function (table, $, form) {
+        // 全局变量
+        var K = {
+            tableObj: {}
+        };
+        // 事件统一处理的变量
+        K.active = {
+            alertCheckboxStatus: function () {
+                var elem = $(this);
+                var tId = elem.data('table');
+                if (!tId) {
+                    layer.msg('缺少表格配置信息！');
+                    return;
+                }
+                var tableObj = K.tableObj[tId];
+                if (!tableObj) {
+                    layer.msg('没有找到表格！');
+                    return;
+                }
+                var config = tableObj.config;
+                var retData = config.data.filter(function (data, index) {
+                    return data[table.config.checkName];
+                });
+                layer.alert(retData && retData.length ? ('数据：' + JSON.stringify(retData)
+                    + '<br>长度为：' + retData.length) : '没有选中的数据');
+            }
+        };
+        // 绑定按钮点击事件
+        $('.layui-btn').unbind('click').click(function () {
+            var that = this,
+                $this = $(that),
+                event = $this.attr('lay-event');
+            if (typeof K.active[event] === 'function') {
+                K.active[event].call(that);
+            }
+        });
+
+        // 测试表格的id
+        var tableId = 'testTable';
+        // 设置通用的表格配置
+
+        K.tableObj[tableId] = table.render({
+            elem: '#' + tableId,
+            // url: 'json/data3.json',
+            data: [
+                {"id": 1, "name": "小米1", "age": 1},
+                {"id": 2, "name": "小米2", "age": 2},
+                {"id": 3, "name": "小米3", "age": 12},
+                {"id": 4, "name": "小米4", "age": 2},
+                {"id": 5, "name": "小米5", "age": 12},
+                {"id": 6, "name": "小米6", "age": 112},
+                {"id": 7, "name": "小米7", "age": 122},
+                {"id": 8, "name": "小米8", "age": 12},
+                {"id": 9, "name": "小米9", "age": 162},
+                {"id": 10, "name": "小米10", "age": 128},
+                {"id": 11, "name": "小米11", "age": 12},
+                {"id": 12, "name": "小米12", "age": 12},
+                {"id": 13, "name": "小米13", "age": 12},
+                {"id": 14, "name": "小米14", "age": 12},
+                {"id": 15, "name": "小米15", "age": 12}
+            ],
+            width: 500,
+            cellMinWidth: 100,
+            height: 300,
+            // checkType: 'single',
+            page: {limit: 5, limits: [5, 10, 20]},
+            cols: [[
+                {type: 'checkbox', fixed: true},
+                {type: 'numbers', title: '序号', fixed: true},
+                {field: 'name', title: '名称'},
+                {field: 'age', title: '年龄', width: 120}
+            ]],
+            done: function (res, curr, count) {
+                var tableView = this.elem.next();
+                if (this.checkType === 'single') {
+                    // 单选的情况下可以将全选的按钮设置不可用，或者直接干掉
+                    var checkboxAllElem = tableView.find('[name="layTableCheckbox"][lay-filter="layTableAllChoose"]');
+                    checkboxAllElem.attr('disabled', 'disabled').next().remove();
+                    checkboxAllElem.remove();
+                    // 因为done会在渲染完成之后所以而已已经渲染出来的checkbox组件不会因为
+                    // 原来的checkbox的消失或者修改一些特殊的样式比如类型而改变所以直接js干掉以前生成出来的checkbox
+                    tableView.find('[name="layTableCheckbox"]').attr('type', 'radio').next().remove();
+                    form.render();
+                }
+            }
+        });
+        // 监听table的checkbox
+        table.on('checkbox(' + tableId + ')', function (obj) {
+            var dataChecked = obj.data;
+            var tabelConfig = K.tableObj[tableId].config;
+            var trElem = $(this).parents('tr').first();
+            if (tabelConfig.checkType === 'single') {
+                if (obj.type === 'one') {
+                    // 单选无视全选的checkbox的事件
+                    // 不管是否选中都要处理，因为目前radio没有取消选择的功能
+                    layui.each(tabelConfig.data, function (index, data) {
+                        data[table.config.checkName] = data.id === dataChecked.id;
+                    })
+                }
+            }
+        });
+
+        // 排序监听
+        table.on('sort(testTable)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            //尽管我们的 table 自带排序功能，但并没有请求服务端。
+            //有些时候，你可能需要根据当前排序的字段，重新向服务端发送请求，从而实现服务端排序，如：
+            K.tableObj.testTable = table.reload('testTable', {
+                initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
+                , where: { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
+                    field: obj.field //排序字段
+                    , order: obj.type //排序方式
+                }
+            });
+        });
+
+        // 监听table的控制
+        form.on('switch(tabel_control)', function (data) {
+            console.log(data.elem); //得到radio原始DOM对象
+            console.log(data.value); //被点击的radio的value值
+            var tableObj = K.tableObj.testTable;
+
+            var dataTemp = tableObj.config.data;
+            // 切换的时候清空当前选中
+            layui.each(dataTemp, function (_i, _d) {
+                _d[table.config.checkName] = false;
+            });
+            // 注意每次reload都得接收返回，这个很重要
+            K.tableObj.testTable = table.reload('testTable', {
+                checkType: data.elem.checked ? 'single' : '',
+                page: {
+                    curr: 1
+                }
+            })
+        });
+    });
+</script>
+</body>
+</html>

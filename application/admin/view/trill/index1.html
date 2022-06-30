@@ -1,0 +1,288 @@
+{include file="common/head"/}
+<style>
+    .layui-carousel-ind
+    {
+        position: absolute;
+    }
+    .layui-carousel-ind ul{
+        position: absolute;
+        right: 0;top: 0;
+        background: none;
+    }
+    .layui-carousel-ind ul:hover{
+        background: none;
+    }
+    .layui-carousel-ind ul .layui-this{
+        background:blue;
+    }
+    .layui-carousel-ind ul :hover{
+        background: blue;
+    }
+    .layui-carousel-ind ul li{
+        background: black;
+    }
+    textarea{
+        font-family: "微软雅黑" !important;
+        padding: 10px;
+    }
+
+
+
+</style>
+<div class="layui-page-header headers">
+    <div class="pagewrap">
+        <span class="layui-breadcrumb">
+          <a href="{:url('index/index')}">首页</a>
+          <a href="javascript:;">{$authruleinfo.pid}</a>
+          <a><cite>{$authruleinfo.id}</cite></a>
+        </span>
+        <a href="javascript:location.replace(location.href);" style="float:right" class="layui-btn layui-btn-blue refreshs"><i class="fa fa-history falocation" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="layui-row layui-rows">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-carousel" id="test1">
+                <div carousel-item>
+                    <div><div id="container" style="width: 100%;height: 400px;margin-top: 20px;"></div></div>
+                    <div>条目2</div>
+                    <div>条目3</div>
+                    <div>条目4</div>
+                    <div>条目5</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{include file="common/foot"/}
+
+<script>
+    layui.use('carousel', function(){
+        var carousel = layui.carousel;
+        //建造实例
+        carousel.render({
+            elem: '#test1'
+            ,width: '100%' //设置容器宽度
+            ,height: '450px'
+            ,arrow: 'none' //始终显示箭头
+            //,anim: 'updown' //切换动画方式
+            ,interval: 15000
+        });
+    });
+</script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+<script type="text/javascript">
+    var dom = document.getElementById("container");
+    var myChart = echarts.init(dom);
+    var app = {};
+    option = null;
+    var posList = [
+        'left', 'right', 'top', 'bottom',
+        'inside',
+        'insideTop', 'insideLeft', 'insideRight', 'insideBottom',
+        'insideTopLeft', 'insideTopRight', 'insideBottomLeft', 'insideBottomRight'
+    ];
+
+    app.configParameters = {
+        rotate: {
+            min: -90,
+            max: 90
+        },
+        align: {
+            options: {
+                left: 'left',
+                center: 'center',
+                right: 'right'
+            }
+        },
+        verticalAlign: {
+            options: {
+                top: 'top',
+                middle: 'middle',
+                bottom: 'bottom'
+            }
+        },
+        position: {
+            options: echarts.util.reduce(posList, function (map, pos) {
+                map[pos] = pos;
+                return map;
+            }, {})
+        },
+        distance: {
+            min: 0,
+            max: 100
+        }
+    };
+
+    app.config = {
+        rotate: 90,
+        align: 'left',
+        verticalAlign: 'middle',
+        position: 'insideBottom',
+        distance: 15,
+        onChange: function () {
+            var labelOption = {
+                normal: {
+                    rotate: app.config.rotate,
+                    align: app.config.align,
+                    verticalAlign: app.config.verticalAlign,
+                    position: app.config.position,
+                    distance: app.config.distance
+                }
+            };
+            myChart.setOption({
+                series: [{
+                    label: labelOption
+                }, {
+                    label: labelOption
+                }, {
+                    label: labelOption
+                }, {
+                    label: labelOption
+                }]
+            });
+        }
+    };
+
+
+    var labelOption = {
+        normal: {
+            show: true,
+            position: app.config.position,
+            distance: app.config.distance,
+            align: app.config.align,
+            verticalAlign: app.config.verticalAlign,
+            rotate: app.config.rotate,
+            formatter: '{c}  {name|{a}}',
+            fontSize: 16,
+            rich: {
+                name: {
+                    textBorderColor: '#fff'
+                }
+            }
+        }
+    };
+
+    option = {
+        color: ['#003366', '#006699', '#4cabce', '#e5323e'],
+        title: {
+            text: '账号管理注册',
+            x:'center',
+            y:'bottom',
+
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data: ['小红书', '百度', '快手', '抖音']
+        },
+        toolbox: {
+            show: true,
+            orient: 'vertical',
+            left: 'right',
+            top: 'center',
+            feature: {
+                mark: {show: true},
+                dataView: {show: true, readOnly: false},
+                magicType: {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                restore: {show: true},
+                saveAsImage: {show: true}
+            }
+        },
+        calculable: true,
+        xAxis: [
+            {
+                type: 'category',
+                axisTick: {show: false},
+                /*  data: ['trytry', 'ytryy', '2014', '2015', '2016']*/
+                data: [
+                    {volist name="list" id="vo"}
+                    '{$vo.time}',
+                    {/volist}
+                ]
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value'
+            }
+        ],
+        series: [
+            {
+                name: '小红书',
+                type: 'bar',
+                barGap: 0,
+                label: labelOption,
+                data:[
+                    {volist name="list" id="vo"}
+                    {$vo.count},
+                    {/volist}
+                ]
+            },
+            {
+                name: '百度',
+                type: 'bar',
+                label: labelOption,
+                data:[
+                    {volist name="list" id="vo"}
+                    {$vo.count},
+                    {/volist}
+                ]
+            },
+            {
+                name: '快手',
+                type: 'bar',
+                label: labelOption,
+                data:[
+                    {volist name="list" id="vo"}
+                    {$vo.count},
+                    {/volist}
+                ]
+            },
+            {
+              /*  name: '抖音',*/
+                name: '抖音',
+                type: 'bar',
+                label: labelOption,
+                data:[
+                    {volist name="list" id="vo"}
+                    {$vo.count},
+                    {/volist}
+                ]
+            }
+        ]
+        /*series: [
+            {
+                name: '快手',
+                type: 'bar',
+                label: labelOption,
+                /!* data: [98, 77, 101, 99, 40]*!/
+                data:[
+                    {volist name="list" id="vo"}
+                    {$vo.count},
+                    {/volist}
+                ]
+            },
+            {
+                name: '抖音',
+                type: 'bar',
+                label: labelOption,
+                /!* data: [98, 77, 101, 99, 40]*!/
+                data:[
+                    {volist name="list" id="vo"}
+                    {$vo.count},
+                    {/volist}
+                ]
+            }
+        ]*/
+    };
+    if (option && typeof option === "object") {
+        myChart.setOption(option, true);
+    }
+</script>

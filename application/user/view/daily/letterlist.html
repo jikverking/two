@@ -1,0 +1,273 @@
+{include file="common/head"/}
+<style>
+    .statu{
+        width: 100px;
+    }
+    .searchtype{
+        width: 150px;
+    }
+</style>
+<div class="layui-page-header headers">
+    <div class="pagewrap">
+        <span class="layui-breadcrumb">
+          <a href="{:url('index/index')}">首页</a>
+          <a href="javascript:;">{$authruleinfo.pid}</a>
+          <a><cite>{$authruleinfo.id}</cite></a>
+        </span>
+        <a href="javascript:location.replace(location.href);" style="float:right" class="layui-btn layui-btn-blue refreshs"><i class="fa fa-history falocation" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="layui-row layui-rows">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="demoTable">
+                <div class="layui-inline layui-inlines">
+                    <input class="layui-input"  id="starttime" placeholder="请选择开始时间">
+                </div>
+                <div class="layui-inline layui-inlines">
+                    <input class="layui-input"  id="endtime" placeholder="请选择结束时间">
+                </div>
+                <span class="layui-form layui-input-inline box statu">
+                    <select name="status" lay-filter="status" id="status">
+                        <option value="">状态</option>
+                        <option value="1">启用</option>
+                        <option value="0">禁止</option>
+                    </select>
+                </span>
+                <span class="layui-form layui-input-inline box searchtype">
+                    <select name="type" id="type">
+                        <option value="0">搜索类型</option>
+                        <option value="id">编号</option>
+                        <option value="content">内容</option>
+                    </select>
+                </span>
+                <div class="layui-inline layui-inlines">
+                    <input class="layui-input" name="key" id="key" placeholder="请输入查询内容">
+                </div>
+                <button class="layui-btn layui-btns layui-btn-blue" id="search" data-type="reload">
+                    <i class="layui-icon" style="color: #fff">&#xe615;</i>搜索
+                </button>
+            </div>
+            <table class="layui-table" id="list" lay-filter="list"></table>
+        </div>
+    </div>
+</div>
+<div class="headalert" id="test" style="display: none;"><br>
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">分组</label>
+            <div class="layui-input-inline">
+                <select name="id">
+                    <option value="">请选择分组</option>
+                    {volist name="group" id="vo"}
+                    <option value="{$vo.id}">{$vo.name}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="lettergroups">分组</button>
+                <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<input type="hidden" value="{:input('get.ids')}" id="ids">
+{include file="common/foot"/}
+<script type="text/html" id="statu">
+    <input type="checkbox" name="statu" lay-skin="switch" lay-text="启用|禁止" value="{{d.id}}" lay-filter="statu" {{ d.statu == 1 ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="topBtn">
+</script>
+<script type="text/html" id="action" >
+    <a tipsmsg="编辑" class="layuimsg"
+       onclick="x_admin_show('编辑私信信息','{:url('letteredit')}?id={{d.id}}','500px','300px','95%','55%')">
+        <button class="layui-btn layui-btn-blue layui-btn-xs layui-btns">
+            <i class="layui-icon">&#xe642;</i>
+        </button>
+    </a>
+</script>
+<script>
+    var ids = $("#ids").val();
+    layui.use(['table','form','element','laydate'], function() {
+        var table = layui.table,form = layui.form,element = layui.element,laydate = layui.laydate, $ = layui.jquery;
+        var tableIn = table.render({
+            elem: '#list',
+            url: '{:url("letterlist")}',
+            text:{none: '<i class="fa fa-snowflake-o" aria-hidden="true"></i>&nbsp;暂无相关数据'},
+            method: 'post',
+            toolbar: '#topBtn',
+            where:{id:ids},
+            title: '私信数据信息',
+            limits:[10,50,100,200,300,400,500,1000,2000],
+            page: true,
+            cols: [[
+                {checkbox:true,width: 80},
+                {field: 'id', title: '编号', width: 120,align: 'center',sort:true},
+                {field: 'content', title: '私信内容',width:300},
+                {field: 'gname', title: '分组名称',width:200},
+                {field: 'statu',title: '状态',width:100, align: 'center', toolbar: '#statu'},
+                {field: 'addtime', title: '添加时间',align: 'center',width:170,sort:true},
+                {width: 120,title: '操作', align: 'center', toolbar: '#action',fixed: 'right'}
+            ]],
+            limit: {$configinfo.limit}, //每页默认显示的数量
+            limits:[{$configinfo.limit},100,200,400,600,1000,2000],
+            done:function(){
+                onmousemoves();
+            }
+        });
+
+        //复选框选中的个数
+        table.on('checkbox(list)', function () {
+            var checkStatus = table.checkStatus('list');
+            var data = checkStatus.data;
+            layer.msg('选中了：'+ data.length + ' 个');
+        });
+
+        laydate.render({
+            elem: '#starttime'
+            ,theme: '#4476A7'
+            ,max: 'new Date()'
+        });
+
+        laydate.render({
+            elem: '#endtime'
+            ,theme: '#4476A7'
+            ,max: 1
+        });
+
+        form.on('select(status)', function(data){
+            tableIn.reload({
+                where: {statu: data.value}
+            });
+        })
+
+        //搜索
+        $('#search').on('click', function() {
+            var key = $('#key').val();
+            var starttime = $("#starttime").val();
+            var endtime = $("#endtime").val();
+            var t1 = new Date(starttime);
+            var t2 = new Date(endtime);
+            if((t2 - t1) < 0){
+                layer.msg('时间范围选择错误！');
+                return false;
+            }
+            var status = $('#status').val();
+            var type = $('#type').val();
+            if($.trim(key) != '' && type == 0){
+                layer.msg('请选择搜索类型！');
+                return false;
+            }
+            if($.trim(key) == '' && type != 0){
+                layer.msg('搜索内容不能为空！');
+                return false;
+            }
+            if($.trim(key) == '' && type == ''  && starttime == "" && endtime == "") {
+                layer.msg('搜索内容不能为空！');
+                return false;
+            }
+            tableIn.reload({
+                where: {key: key,starttime:starttime,endtime:endtime,statu:status,type:type}
+            })
+        });
+
+        //分组
+        $('#group').click(function(){
+            var checkStatus = table.checkStatus('list'); //test即为参数uid设定的值
+            var id = [];
+            $(checkStatus.data).each(function (i, o) {
+                id.push(o.id);
+            });
+            if (id == ""){
+                layer.msg("请选择私信进行分组！");
+                return false;
+            }
+            cid = id.toString();
+            var id = $("#groupid").val();
+            $.post("{:url('lettergroups')}",{cid:cid,id:id},function(res){
+                if(res.code == 1){
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.parent.location.reload();//修改成功后刷新父界面
+                    }, 1000);
+                }else if(res.code === 0) {
+                    layer.msg(res.msg);
+                }else{
+                    layer.msg('你无操作权限！');
+                }
+            },'json')
+            return false;
+        })
+
+        //分组
+        $('#groups').click(function(){
+            var checkStatus = table.checkStatus('list'); //test即为参数uid设定的值
+            var id = [];
+            $(checkStatus.data).each(function (i, o) {
+                id.push(o.id);
+            });
+            if (id == ""){
+                layer.msg("请选择私信进行分组！");
+                return false;
+            }
+            groups = id.toString();
+            layer.open({
+                type: 1,
+                title: '加入分组',
+                skin: 'layui-layer-lan',
+                shadeClose: true,
+                shade: false,
+                maxmin: true, //开启最大化最小化按钮
+                shade:0.4,
+                anim: 1,
+                area: screen() <2 ? ['95%','75%'] : ['400px', '400px'],
+                content: $("#test").html()
+            });
+            form.render();
+        })
+
+        //监听提交
+        form.on('submit(lettergroups)', function(data){
+            data.field.cid = groups;
+            if(data.field.id == ""){
+                layer.msg("请选择分组信息!");
+                return false;
+            }
+            $.post("{:url('lettergroups')}",data.field,function(res){
+                if(res.code == 1){
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.parent.location.reload();//修改成功后刷新父界面
+                    }, 1000);
+                }else if(res.code === 0) {
+                    layer.msg(res.msg);
+                }else{
+                    layer.msg('你无操作权限！');
+                }
+            },'json')
+            return false;
+        });
+
+        //修改状态
+        form.on('switch(statu)', function(obj){
+            var urls = "{:url('letterstatu')}";
+            loading =layer.load(1, {shade: [0.1,'#fff']});
+            var id = this.value;
+            var statu = obj.elem.checked===true?1:0;
+            $.post(urls,{'id':id,'statu':statu},function(res) {
+                layer.close(loading);
+                if(res.code===1){
+                    layer.msg(res.msg);
+                    tableIn.reload();
+                }else if(res.code===0){
+                    layer.msg(res.msg);
+                }else{
+                    layer.msg('你无操作权限！');
+                }
+            },'json');
+        });
+    });
+</script>

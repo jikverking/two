@@ -1,0 +1,406 @@
+{include file="common/head" /}
+<style>
+    .layui-carousel-ind
+    {
+        position: absolute;
+    }
+    .layui-carousel-ind ul{
+        position: absolute;
+        right: 0;top: -5px;
+        background: none;
+    }
+    .layui-carousel-ind ul:hover{
+        background: none;
+    }
+    .layui-carousel-ind ul .layui-this{
+        background: #e2e2e2;
+    }
+    .layui-carousel-ind ul :hover{
+        background: #e2e2e2;
+    }
+    .layui-carousel-ind ul li{
+        background:black;
+    }
+    textarea{
+        font-family: "微软雅黑" !important;
+        padding: 10px;
+    }
+
+
+
+</style>
+<div class="layui-col-sm12 layui-col-md12">
+    <div class="layui-card">
+        <blockquote class="layui-elem-quote" style="background: #fff !important;">
+            <legend>
+                <div>
+                    <i class="layui-icon">&#xe66f;</i> 欢迎登陆：
+                    <span class="x-red">{:session('username')} </span>
+                    <span id="nowTime"></span>
+                </div>
+            </legend>
+        </blockquote>
+    </div>
+</div>
+<div class="layui-row layui-col-space20">
+    <div class="layui-col-sm6 layui-col-md3" onclick="window.location.href='{:url('device/devicelist')}'">
+        <div class="layui-card">
+            <div class="layui-card-body chart-card">
+                <div class="chart-header">
+                    <div class="metawrap">
+                        <div class="meta">
+                            <span>本月单量</span>
+                        </div>
+                        <div class="total">{$device.all}</div>
+                    </div>
+                    <div style="float: right;"><i class="fa fa-building" aria-hidden="true" style="color:#177ce3;font-size:30px;"></i></div>
+                </div>
+                <div class="chart-body">
+                    <div class="contentwrap">
+
+                    </div>
+                </div>
+                <div class="chart-footer">
+                    <div class="field">
+                        <span>在线设备: </span>
+                        <span style="font-weight: bold;">{$device.online}</span>&nbsp;&nbsp;
+                        <span>离线设备: </span>
+                        <span style="font-weight: bold;">{$device.offline}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-sm6 layui-col-md3">
+        <div class="layui-card">
+            <div class="layui-card-body chart-card">
+                <div class="chart-header">
+                    <div class="metawrap">
+                        <div class="meta">
+                            <span>总用户数</span>
+                        </div>
+                        <div class="total">126,560</div>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <div class="contentwrap">
+
+                    </div>
+                </div>
+                <div class="chart-footer">
+                    <div class="field">
+                        <span>日注册量</span>
+                        <span>321</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-sm6 layui-col-md3">
+        <div class="layui-card">
+            <div class="layui-card-body chart-card">
+                <div class="chart-header">
+                    <div class="metawrap">
+                        <div class="meta">
+                            <span>总用户数</span>
+                        </div>
+                        <div class="total">126,560</div>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <div class="contentwrap">
+
+                    </div>
+                </div>
+                <div class="chart-footer">
+                    <div class="field">
+                        <span>日注册量</span>
+                        <span>321</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-sm6 layui-col-md3">
+        <div class="layui-card">
+            <div class="layui-card-body chart-card">
+                <div class="chart-header">
+                    <div class="metawrap">
+                        <div class="meta">
+                            <span>总用户数</span>
+                        </div>
+                        <div class="total">126,560</div>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <div class="contentwrap">
+
+                    </div>
+                </div>
+                <div class="chart-footer">
+                    <div class="field">
+                        <span>日注册量</span>
+                        <span>321</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <div class="infos layui-btns layui-btn-green">
+                        <i class="fa fa-assistive-listening-systems facolors" aria-hidden="true"></i>
+                    </div> 系统信息
+                </div>
+                <div class="layui-card-body">
+                    <table  class="layui-table" lay-even lay-skin="row">
+                        <tbody>
+                            <tr>
+                                <th>网站域名</th>
+                                <td>{$config.url}</td>
+                            </tr>
+                            <tr>
+                                 <th>网站目录</th>
+                                 <td>{$config.document_root}</td>
+                             </tr> 
+                            <tr>
+                                <th>服务器操作系统</th>
+                                <td>{$config.server_os}</td>
+                            </tr>
+                            <tr>
+                                <th>服务器端口</th>
+                                <td>{$config.server_port}</td>
+                            </tr>
+                            <tr>
+                                <th>服务器IP</th>
+                                <td>{$config.server_ip}</td>
+                            </tr>
+                            <tr>
+                                <th>WEB运行环境</th>
+                                <td>{$config.server_soft}</td>
+                            </tr>
+                            <tr>
+                                <th>MySQL数据库版本</th>
+                                <td>{$config.mysql_version}</td>
+                            </tr>
+                            <tr>
+                                <th>运行PHP版本</th>
+                                <td>{$config.php_version}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <div class="infos layui-btns layui-btn-red">
+                        <i class="fa fa-user-o facolors" aria-hidden="true"></i>
+                    </div> 我的个人信息
+                </div>
+                <div class="layui-card-body">
+                    <table  class="layui-table" lay-even lay-skin="row">
+                        <tbody>
+                            <tr>
+                                <th>你好，{:session('username')} 欢迎你登录！</th>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>本次登录时间</th>
+                                <td>{:date('Y-m-d H:i:s',$admininfo.logintime)}</td>
+                            </tr>
+                            <tr>
+                                <th>上次登录时间</th>
+                                <td>{:date('Y-m-d H:i:s',session('logintime'))}</td>
+                            </tr>
+                            <tr>
+                                <th>上次登录IP</th>
+                                <td>{:session('loginip')}</td>
+                            </tr>
+                            <tr>
+                                <th>上次登录IP地址</th>
+                                <td>{:session('ipadress')}</td>
+                            </tr>
+                            <tr>
+                                <th>登陆次数</th>
+                                <td>{$admininfo.loginnum}</td>
+                            </tr>
+                            <tr>
+                                <th>手机号码</th>
+                                <td>{$admininfo.tel}</td>
+                            </tr>
+                            <tr>
+                                <th>当前时间</th>
+                                <td id="nowTimes"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+       <!-- <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">标题</div>
+                <div class="layui-card-body">
+                    内容
+                </div>
+            </div>
+        </div>-->
+    </div>
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <!--<div class="layui-card-header">平台设备</div>-->
+                <div class="layui-card-header">
+                    <div class="infos layui-btns layui-btn-blue">
+                        <i class="fa fa-building facolors" aria-hidden="true"></i>
+                    </div> 平台设备
+                </div>
+                <div class="layui-card-body">
+                    <div id="container" style="width: 100%;height:250px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">标题</div>
+                <div class="layui-card-body">
+                    <div class="layui-carousel" id="test1">
+                        <div carousel-item>
+                            <div>条目1</div>
+                            <div>条目2</div>
+                            <div>条目3</div>
+                            <div>条目4</div>
+                            <div>条目5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       <!-- <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">标题</div>
+                <div class="layui-card-body">
+                    <div class="layui-carousel" id="test1">
+                        <div carousel-item>
+                            <div>条目1</div>
+                            <div>条目2</div>
+                            <div>条目3</div>
+                            <div>条目4</div>
+                            <div>条目5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>-->
+    </div>
+
+
+    <div class="layui-col-sm12 layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-tab layui-tab-brief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">账号管理</li>
+                    <li>活跃度</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                       y
+                    </div>
+                    <div class="layui-tab-item">
+                        ddd
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{include file="common/foot" /}
+<script type="text/javascript" src="__STATIC__/common/js/echarts.min.js"></script>
+<script>
+    layui.use('carousel', function(){
+        var carousel = layui.carousel;
+        //建造实例
+        carousel.render({
+            elem: '#test1'
+            ,width: '100%' //设置容器宽度
+            ,height: '200px'
+            ,arrow: 'none' //始终显示箭头
+            //,anim: 'updown' //切换动画方式
+            ,interval: 5000
+        });
+    });
+</script>
+<script type="text/javascript">
+    //获取系统时间
+    var newDate = '';
+    getLangDate();
+    //值小于10时，在前面补0
+    function dateFilter(date){
+        if(date < 10){return "0"+date;}
+        return date;
+    }
+    function getLangDate(){
+        var dateObj = new Date(); //表示当前系统时间的Date对象
+        var year = dateObj.getFullYear(); //当前系统时间的完整年份值
+        var month = dateObj.getMonth()+1; //当前系统时间的月份值
+        var date = dateObj.getDate(); //当前系统时间的月份中的日
+        var day = dateObj.getDay(); //当前系统时间中的星期值
+        var weeks = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+        var week = weeks[day]; //根据星期值，从数组中获取对应的星期字符串
+        var hour = dateObj.getHours(); //当前系统时间的小时值
+        var minute = dateObj.getMinutes(); //当前系统时间的分钟值
+        var second = dateObj.getSeconds(); //当前系统时间的秒钟值
+        var timeValue = "" +((hour >= 12) ? (hour >= 18) ? "晚上" : "下午" : "上午" ); //当前时间属于上午、晚上还是下午
+        newDate = dateFilter(year)+"年"+dateFilter(month)+"月"+dateFilter(date)+"日 "+" "+dateFilter(hour)+":"+dateFilter(minute)+":"+dateFilter(second);
+        document.getElementById("nowTime").innerHTML = timeValue+"好！当前时间为： "+newDate+"　"+week;
+        document.getElementById("nowTimes").innerHTML = newDate+"　"+week;
+        setTimeout("getLangDate()",1000);
+    }
+</script>
+<script type="text/javascript">
+    var dom = document.getElementById("container");
+    var myChart = echarts.init(dom);
+    var app = {};
+    option = null;
+    option = {
+        color: ['#003366', '#4cabce'],
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: ['在线设备','离线设备']
+        },
+        series : [
+            {
+                name: '平台设备',
+                type: 'pie',
+                radius : '55%',
+                center: ['50%', '60%'],
+                data:[
+                    {value:{$device.online}, name:'在线设备'},
+                    {value:{$device.offline}, name:'离线设备'},
+                ],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+    ;
+    if (option && typeof option === "object") {
+        myChart.setOption(option, true);
+    }
+</script>

@@ -1,0 +1,48 @@
+{include file="common/header"/}
+<div class="fadeInUp animated headalert"><br>
+    <div class="layui-anim layui-anim-up">
+        <form class="layui-form">
+            <input type="hidden" name="group_id" value="{$info.group_id}">
+            <div class="layui-container">
+                <div class="layui-row">
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">用户组名</label>
+                      <div class="layui-input-4">
+                        <input type="text" name="title" autocomplete="off" placeholder="请输入用户组名" class="layui-input" value='{$info.title}'>
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <div class="layui-input-block">
+                        <button type="submit" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="groupedit">编辑</button>
+                        <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+                      </div>
+                    </div>
+              </div>
+            </div>
+        </form>
+    </div>   
+</div> 
+{include file="common/footer"/}
+<script>
+var url = '{:url("groupedit")}';
+layui.use(['form','layer','element'], function(){
+    var form = layui.form
+    ,layer = layui.layer
+    ,element = layui.element
+    ,$ = layui.jquery;
+    //监听提交
+    form.on('submit(groupedit)', function(data){
+      $.post(url,data.field,function(res){
+          if(res.code == 1){
+            layer.msg(res.msg);
+              setTimeout(function(){
+                  window.parent.location.reload();//修改成功后刷新父界面
+            }, 1000);
+          }else{
+            layer.msg(res.msg); 
+          }
+      },'json')
+        return false;
+    }); 
+});
+</script>

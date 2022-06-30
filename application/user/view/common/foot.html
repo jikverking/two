@@ -1,0 +1,31 @@
+        </div> 
+    </div>  
+    <br>
+    <br>  
+    <div class="layui-footer footer">
+        <p>任务管理系统</p>
+    </div>
+    <div class="mobile-mask"></div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="__STATIC__/common/js/jquery.2.1.1.min.js"></script>
+<script src="__STATIC__/common/layui/layui.js"></script>
+<script type="text/javascript" src="__STATIC__/common/js/common.js"></script>
+<script>
+	layui.config({
+	  base: '__STATIC__/admin/js/' 
+	}).use('home');
+    layui.use(['table'], function() {
+        var table = layui.table, $ = layui.jquery;
+        var appkey = "{$userinfo['appkey']}";
+        $("#appkeys").click(function(){
+            layer.alert(appkey, {
+                title:'<i class="fa fa-key" aria-hidden="true"></i> 用户APPKEY'
+                ,skin: 'layui-layer-lan'
+                ,closeBtn: 1
+                ,anim: 4 //动画类型
+            });
+        })
+    });
+</script>

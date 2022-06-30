@@ -1,0 +1,86 @@
+{include file="common/header"/}
+<div class="fadeInUp animated headalert"><br>
+    <div class="layui-anim layui-anim-up">
+        <form class="layui-form">
+            <div class="layui-container">
+                <input type="hidden" name="id" value="{$info.id}">
+                <div class="layui-row">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">应用类型</label>
+                        <div class="layui-input-inline">
+                            <select name="type" lay-verify="required">
+                                {volist name="type" id="vo"}
+                                {if condition="$vo.id eq $info.type"}
+                                <option value="{$vo.id}" selected>{$vo.name}</option>
+                                {else /}
+                                <option value="{$vo.id}">{$vo.name}</option>
+                                {/if}
+                                {/volist}
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">平台名称</label>
+                        <div class="layui-input-4">
+                            <input type="text" name="name" autocomplete="off" placeholder="请输入平台名称" class="layui-input" value="{$info.name}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">应用标识</label>
+                        <div class="layui-input-4">
+                            <input type="text" name="tagname" autocomplete="off" placeholder="请输入应用标识" class="layui-input" value="{$info.tagname}">
+                            <div class="layui-form-mid layui-word-aux">
+                                <span style="color: red">*</span> 应用标识首字母大写，允许2-16字节，允许字母数字
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button type="submit" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="tagedit">编辑</button>
+                            <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{include file="common/footer"/}
+<script>
+    var url = '{:url("tagedit")}';
+    layui.use(['form','layer','element'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,$ = layui.jquery;
+        //监听提交
+        form.on('submit(tagedit)', function(data){
+            var name = data.field.name;
+            if(name == ""){
+                layer.msg("分组名称不能为空");
+                return false;
+            }
+
+            var tagname = data.field.tagname;
+            if(tagname == ""){
+                layer.msg("应用标识不能为空");
+                return false;
+            }
+            if(!(/^[A-Z][a-zA-Z0-9]{1,15}$/).test(tagname)){
+                layer.msg("应用标识首字母大写，允许2-16字节，允许字母数字");
+                return false;
+            };
+            $.post(url,data.field,function(res){
+                if(res.code == 1){
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.parent.location.reload();//修改成功后刷新父界面
+                    }, 1000);
+                }else{
+                    layer.msg(res.msg);
+                }
+            },'json')
+            return false;
+        });
+    });
+</script>

@@ -1,0 +1,139 @@
+{include file="common/head"/}
+<div class="layui-page-header headers">
+    <div class="pagewrap">
+        <span class="layui-breadcrumb">
+          <a href="{:url('index/index')}">首页</a>
+          <a href="javascript:;">{$authruleinfo.pid}</a>
+          <a><cite>{$authruleinfo.id}</cite></a>
+        </span>
+        <a href="javascript:location.replace(location.href);" style="float:right" class="layui-btn layui-btn-blue refreshs"><i class="fa fa-history falocation" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="layui-row layui-rows">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <form class="layui-form">
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn-red layui-btns" id="btn">
+                        确认
+                    </button>
+                    <label class="layui-form-label">站点</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" lay-skin="primary"  id="alls" lay-filter="alls" title="全部">
+                        <input type="checkbox" lay-skin="primary"  id="allfalse" lay-filter="allfalse" title="反选">
+                        <br/><br/>
+                        <input type="checkbox" name="cityId" lay-skin="primary" lay-filter="c_one" class="cityId"  title="北京" value="10001">
+                        <input type="checkbox" name="cityId" lay-skin="primary" lay-filter="c_one" class="cityId"  title="测试" value="10002">
+                        <input type="checkbox" name="cityId" lay-skin="primary" lay-filter="c_one" class="cityId"  title="西安" value="10003">
+                        <input type="checkbox" name="cityId" lay-skin="primary" lay-filter="c_one" class="cityId"  title="常州" value="10004">
+                        <input type="checkbox" name="cityId" lay-skin="primary" lay-filter="c_one" class="cityId"  title="肇庆" value="10005">
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{include file="common/foot"/}
+<script type="text/html" id="topBtn">
+    <button tipsmsg="添加" class="layui-btn layui-btn layui-btn-blue layui-btn-sm onmousemovebtns" onclick="x_admin_show('添加评论','{:url('commentadd')}','700px','650px','95%','95%')"><i class="layui-icon"></i>添加</button>
+</script>
+<script type="text/html" id="action" >
+    <a tipsmsg="编辑" class="layuimsg" onclick="x_admin_show('编辑评论信息','{:url('commentedit')}?id={{d.id}}','700px','650px','95%','95%')">
+        <button class="layui-btn layui-btn-blue layui-btn-xs layui-btns">
+            <i class="layui-icon">&#xe642;</i>
+        </button>
+    </a>
+    <a lay-event="del" tipsmsg="删除" class="layuimsg">
+        <button class="layui-btn layui-btn-red layui-btn-xs layui-btns">
+            <i class="layui-icon">&#xe640;</i>
+        </button>
+    </a>
+</script>
+<script>
+    var arr = [];
+    layui.use(['table','form','element','laydate'], function() {
+        var table = layui.table,form = layui.form,element = layui.element,laydate = layui.laydate, $ = layui.jquery;
+        var arrs = [];
+        //全选
+        form.on('checkbox(alls)', function (data) {
+            var a = data.elem.checked;
+            if (a == true) {
+                $(".cityId").prop("checked", true);
+                form.render('checkbox');
+            } else {
+                $(".cityId").prop("checked", false);
+                form.render('checkbox');
+            }
+            form.render('checkbox');
+            var arr =[];
+            $("input[name='cityId']:checked").each(function(){
+                arr.push($(this).val());
+            })
+            arrs = arr;
+            console.log(arrs);
+
+        });
+        //反选
+        form.on('checkbox(allfalse)', function () {
+            var item = $(".cityId");
+            item.each(function () {
+                if ($(this).prop("checked")) {
+                    $(this).prop("checked", false);
+                } else {
+                    $(this).prop("checked", true);
+                }
+            })
+            form.render('checkbox');
+            var arr =[];
+            $("input[name='cityId']:checked").each(
+                function(){
+                    arr.push($(this).val());
+            })
+            arrs = arr;
+            console.log(arrs);
+
+
+
+        });
+        //有一个未选中全选取消选中
+        form.on('checkbox(c_one)', function () {
+            var arr =[];
+            $("input[name='cityId']:checked").each(function(){
+                arr.push($(this).val());
+            })
+            arrs = arr;
+            console.log(arrs);
+            var item = $(".cityId");
+            for (var i = 0; i < item.length; i++) {
+                if (item[i].checked == false) {
+                    $("#alls").prop("checked", false);
+                    if(all==0){
+                        $("#alls").prop("checked", true);
+                        form.render('checkbox');
+                    }
+                    break;
+                }
+            }
+            //如果都勾选了  勾上全选
+            var  all=item.length;
+            for (var i = 0; i < item.length; i++) {
+                if (item[i].checked == true) {
+                    all--;
+                }
+            }
+            if(all==0){
+                $("#alls").prop("checked", true);
+                form.render('checkbox');
+            }
+        });
+
+
+        $("#btn").click(function(){
+            console.log(arrs);
+            return false;
+        })
+
+    });
+</script>

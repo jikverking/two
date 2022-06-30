@@ -1,0 +1,131 @@
+{include file="common/head"/}
+<style>
+    .layui-box .layui-laypage-prev{
+        border: none;
+        /* background: red;*/
+    }
+    .layui-box .layui-laypage-next{
+        border-top: none;
+        border-right: none;
+        border-bottom: none;
+    }
+</style>
+<div class="layui-page-header headers">
+    <div class="pagewrap">
+        <span class="layui-breadcrumb">
+          <a href="{:url('index/index')}">首页</a>
+          <a href="javascript:;">{$authruleinfo.pid}</a>
+          <a><cite>{$authruleinfo.id}</cite></a>
+        </span>
+        <a href="javascript:location.replace(location.href);" style="float:right" class="layui-btn layui-btn-blue refreshs"><i class="fa fa-history falocation" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="layui-row layui-rows">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="demoTable">
+                <div class="layui-inline layui-inlines">
+                    <input class="layui-input"  id="starttime" placeholder="请输入开始时间">
+                </div>
+                <div class="layui-inline layui-inlines">
+                    <input class="layui-input"  id="endtime" placeholder="请输入结束时间">
+                </div>
+                <div class="layui-inline layui-inlines">
+                    <input class="layui-input" name="key" id="key" placeholder="请输入查询内容">
+                </div>
+                <button class="layui-btn layui-btns layui-btn-blue" id="search" data-type="reload">
+                    <i class="layui-icon" style="color: #fff">&#xe615;</i>搜索
+                </button>
+
+                <button  tipsmsg="删除" class="layui-btn layui-btns layui-btn-red onmousemovebtns" id="delAll">
+                    <i class="layui-icon">&#xe640;</i>删除
+                </button>
+            </div>
+            <div class="layui-form">
+                <table class="layui-table">
+                    <colgroup>
+                        <col width="150">
+                        <col width="150">
+                        <col width="200">
+                        <col width="200">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>人物</th>
+                        <th>民族</th>
+                        <th>出场时间</th>
+                        <th>格言</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+                        <td>贤心</td>
+                        <td>汉族</td>
+                        <td>1989-10-14</td>
+                        <td>人生似修行</td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+            </div>
+            <div id="demo7"></div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" value="{:input('get.ids')}" id="ids">
+{include file="common/foot"/}
+<!--<script type="text/html" id="topBtn">
+    <button tipsmsg="添加" class="layui-btn layui-btn layui-btn-blue layui-btn-sm onmousemovebtns"
+            onclick="x_admin_show('添加评论','{:url('commentadd')}','700px','650px','95%','95%')">
+        <i class="layui-icon"></i>添加
+    </button>
+</script>-->
+<script type="text/html" id="topBtn">
+    <button tipsmsg="添加" class="layui-btn layui-btn layui-btn-blue layui-btn-sm onmousemovebtns"
+            onclick="x_admin_show('添加评论','{:url('commentadd')}','600px','300px','95%','55%')">
+        <i class="layui-icon"></i>添加
+    </button>
+</script>
+<script type="text/html" id="action" >
+
+    <a tipsmsg="编辑" class="layuimsg"
+       onclick="x_admin_show('编辑评论信息','{:url('commentedit')}?id={{d.id}}','600px','300px','95%','55%')">
+        <button class="layui-btn layui-btn-blue layui-btn-xs layui-btns">
+            <i class="layui-icon">&#xe642;</i>
+        </button>
+    </a>
+    <a lay-event="del" tipsmsg="删除" class="layuimsg">
+        <button class="layui-btn layui-btn-red layui-btn-xs layui-btns">
+            <i class="layui-icon">&#xe640;</i>
+        </button>
+    </a>
+
+</script>
+<script>
+    layui.use(['table','form','element','laydate','laypage'], function() {
+        var table = layui.table,form = layui.form,element = layui.element,laypage = layui.laypage,laydate = layui.laydate, $ = layui.jquery;
+        //完整功能
+        laypage.render({
+            elem: 'demo7'
+            ,count: {$info.count}
+            ,curr: {$info.pages}
+            ,limit: {$info.limit}
+            ,prev: '<i class="layui-icon"></i>'
+            ,next: '<i class="layui-icon"></i>'
+            ,layout: [ 'prev', 'page', 'next', 'skip', 'count','limit']
+            ,hash:true
+            ,jump: function(obj,first){
+                var curr = obj.curr;
+                var limit = obj.limit;
+                if(!first) {
+                    location.href = "{:url('index4')}" + '?limit=' + limit+ '&page=' + curr;
+                }
+                console.log(obj)
+            }
+        });
+
+    });
+</script>

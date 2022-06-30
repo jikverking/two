@@ -1,0 +1,70 @@
+{include file="common/header"/}
+<div class="fadeInUp animated headalert" style="padding-right: 20px"><br>
+    <div class="layui-anim layui-anim-up">
+        <form class="layui-form">
+            <div class="layui-container">
+                <input type="hidden" name="gid" value="{:input('get.gid')}">
+                <div class="layui-row">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">评论内容</label>
+                        <div class="layui-input-4">
+                            <textarea name="content"  placeholder="请输入评论内容" class="layui-textarea"></textarea>
+                            <div class="layui-form-mid layui-word-aux">
+                                <span style="color: red">*</span> <!--评论内容长度为4~500字符串-->评论内容长度大于或等于2位
+                            </div>
+                        </div>
+                    </div>
+                  <!--  <div class="layui-form-item">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="statu" value="1" title="启用" lay-verify="statu" checked>
+                            <input type="radio" name="statu" value="0" lay-verify="statu" title="禁止">
+                        </div>
+                    </div>-->
+                    <div class="layui-form-item">
+                      <div class="layui-input-block">
+                        <button type="submit" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="add">添加</button>
+                        <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+                      </div>
+                    </div>
+              </div>
+            </div>
+        </form>
+    </div>
+</div>
+{include file="common/footer"/}
+<script type="text/javascript">
+var url = '{:url("commentadd")}';
+layui.use(['form','layer'], function(){
+    var form = layui.form
+    ,layer = layui.layer
+    ,$ = layui.jquery;
+
+    form.on('submit(add)', function(data){
+        var content = $.trim(data.field.content);
+        if(content == ""){
+            layer.msg("内容不能为空");
+            return false;
+        }
+        if(content.length < 2){
+            layer.msg("评论内容长度大于或等于2位");
+            return false;
+        }
+        /*if(content.length < 4  || content.length > 500){
+            layer.msg("评论内容长度为4~500字符串");
+            return false;
+        }*/
+        $.post(url,data.field,function(res){
+            if(res.code == 1){
+                layer.msg(res.msg);
+                setTimeout(function(){
+                    window.parent.location.reload();//修改成功后刷新父界面
+                }, 1000);
+            }else{
+                layer.msg(res.msg);
+            }
+        },'json')
+        return false;
+    });
+});
+</script>

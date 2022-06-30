@@ -1,0 +1,111 @@
+{include file="common/head"/}
+<div class="layui-page-header headers">
+    <div class="pagewrap">
+        <span class="layui-breadcrumb">
+          <a href="{:url('index/index')}">首页</a>
+          <a href="javascript:;">{$authruleinfo.pid}</a>
+          <a><cite>{$authruleinfo.id}</cite></a>
+        </span>
+        <a href="javascript:location.replace(location.href);" style="float:right" class="layui-btn layui-btn-blue refreshs"><i class="fa fa-history falocation" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="layui-row layui-rows">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="demoTable">
+                <button  tipsmsg="删除" class="layui-btn layui-btns layui-btn-red onmousemovebtns" id="delAll"><i class="layui-icon">&#xe640;</i>删除</button>
+            </div>
+            <table class="layui-table" id="list" lay-filter="list"></table>
+        </div>
+    </div>
+</div>
+{include file="common/foot"/}
+<script type="text/html" id="action" >
+    <a lay-event="del" tipsmsg="删除" class="layuimsg">
+    <button class="layui-btn layui-btn-red layui-btn-xs layui-btns">
+      <i class="layui-icon">&#xe640;</i>
+    </button>
+    </a>
+</script>
+<script>
+    layui.use(['table','form','element'], function() {
+        var table = layui.table,form = layui.form,element = layui.element, $ = layui.jquery;
+        var tableIn = table.render({
+            elem: '#list',
+            url: '{:url("index")}',
+            text:{none: '<i class="fa fa-snowflake-o" aria-hidden="true"></i>&nbsp;暂无相关数据'},
+            method: 'post',
+            page: true,
+            cols: [[
+                {checkbox:true,width: 80},
+                {field: 'id', title: '编号', width: 120,align: 'center',sort:true},
+                {field: 'aid', title: '操作用户',width:150,align: 'center'},
+                {field: 'pids', title: '类型',width:130},
+                {field: 'content', title: '内容',width:300},
+                {field: 'addtime', title: '操作时间',align: 'center',width:170,sort:true},
+                {width: 80,title: '操作', align: 'center', toolbar: '#action',fixed: 'right'}
+            ]],
+            limit: 10, //每页默认显示的数量
+            limits:[10,100,200,400,600,1000,2000],
+            done:function(msg){
+                onmousemoves();
+               /* console.log(msg.data);*/
+            }
+        });
+
+        table.on('tool(list)', function(obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('您确定要删除该信息吗？', {icon: 3,skin: 'layui-layer-lan',anim: 4,title:'删除'}, function(index){
+                    var loading = layer.load(1, {shade: [0.1, '#fff']});
+                    $.post("{:url('del')}",{id:data.id},function(res){
+                        layer.close(loading);
+                        if(res.code===1){
+                            layer.msg(res.msg);
+                            tableIn.reload();
+                        }else if(res.code === 0) {
+                            layer.msg(res.msg);
+                        }else{
+                            layer.msg('你无操作权限！');
+                        }
+                    },'json');
+                    layer.close(index);
+                });
+            }
+        });
+
+        table.on('checkbox(list)', function (obj) {
+            var checkStatus = table.checkStatus('list');
+            var data = checkStatus.data;
+            layer.msg('选中了：'+ data.length + ' 个');
+        });
+
+        $('#delAll').click(function(){
+            var checkStatus = table.checkStatus('list'); //test即为参数uid设定的值
+            var id = [];
+            $(checkStatus.data).each(function (i, o) {
+                id.push(o.id);
+            });
+            if (id == ""){
+                layer.msg("请选择内容进行删除");
+                return false;
+            }
+            layer.confirm('确认要删除选中信息吗？', {icon: 3,skin: 'layui-layer-lan',anim: 4,title:'删除'}, function(index) {
+                layer.close(index);
+                var loading = layer.load(1, {shade: [0.1, '#fff']});
+                $.post("{:url('del')}", {id: id}, function (data) {
+                    layer.close(loading);
+                    if (data.code === 1) {
+                        layer.msg(data.msg);
+                        tableIn.reload();
+                    }else if(data.code === 0) {
+                        layer.msg(data.msg);
+                    }else{
+                        layer.msg('你无操作权限！');
+                    }
+                },'json');
+            });
+        })
+    });
+</script>

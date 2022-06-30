@@ -1,0 +1,297 @@
+{include file="common/head"/}
+<div class="layui-page-header headers">
+    <div class="pagewrap">
+        <span class="layui-breadcrumb">
+          <a href="{:url('index/index')}">首页</a>
+          <a href="javascript:;">{$authruleinfo.pid}</a>
+          <a><cite>{$authruleinfo.id}</cite></a>
+        </span>
+        <a href="javascript:location.replace(location.href);" style="float:right" class="layui-btn layui-btn-blue refreshs"><i class="fa fa-history falocation" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="layui-row layui-rows">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="demoTable">
+                <div class="layui-inline layui-inlines">
+                    <input class="layui-input"  id="starttime" placeholder="请输入开始时间">
+                </div>
+                <div class="layui-inline layui-inlines">
+                    <input class="layui-input"  id="endtime" placeholder="请输入结束时间">
+                </div>
+                <span class="layui-form layui-input-inline box">
+                    <select name="status" lay-filter="status" id="status">
+                        <option value="">状态</option>
+                        <option value="1">启用</option>
+                        <option value="0">禁止</option>
+                    </select>
+                </span>
+                <div class="layui-inline layui-inlines">
+                    <input class="layui-input" name="key" id="key" placeholder="请输入查询内容">
+                </div>
+                <button class="layui-btn layui-btns layui-btn-blue" id="search" data-type="reload"><i class="layui-icon" style="color: #fff">&#xe615;</i>搜索</button>
+               <!-- <button  tipsmsg="删除" class="layui-btn layui-btns layui-btn-red onmousemovebtns" id="delAll"><i class="layui-icon">&#xe640;</i>删除</button>-->
+            </div>
+            <table class="layui-table" id="list" lay-filter="list"></table>
+        </div>
+    </div>
+</div>
+{include file="common/foot"/}
+<script type="text/html" id="statu">
+    {{# if(d.id==1){ }}
+    <input type="checkbox" disabled name="statu" value="{{d.id}}" lay-skin="switch" lay-text="启用|禁止" lay-filter="statu" checked>
+    {{# }else{  }}
+    <input type="checkbox" name="statu" lay-skin="switch" lay-text="启用|禁止" value="{{d.id}}" lay-filter="statu" {{ d.statu == 1 ? 'checked' : '' }}>
+    {{# } }}
+</script>
+<script type="text/html" id="endtimes">
+    {{# if (d.id == 1) { }}  
+    <a tipsmsg="未到期" class="layuimsg" href="javascript:;">
+        <button class="layui-btn layui-btn-green layui-btn-xs layui-btns">
+            未到期
+        </button>
+    </a>
+    {{# } else if(d.nowtime > d.endtimes) { }}  
+    <a tipsmsg="已到期" class="layuimsg" href="javascript:;">
+        <button class="layui-btn layui-btn-red layui-btn-xs layui-btns">
+            已到期
+        </button>
+    </a>
+    {{# } else { }}  
+    <a tipsmsg="未到期" class="layuimsg" href="javascript:;">
+        <button class="layui-btn layui-btn-green layui-btn-xs layui-btns">
+           未到期
+        </button>
+    </a>
+    {{# } }}  
+</script>
+<script type="text/html" id="topBtn">
+    <button tipsmsg="添加" class="layui-btn layui-btn layui-btn-blue layui-btn-sm onmousemovebtns"
+            onclick="x_admin_show('添加用户','{:url('useradd')}','500px','500px','95%','95%')">
+        <i class="layui-icon"></i>添加
+    </button>
+</script>
+<script type="text/html" id="action" >
+    <a tipsmsg="编辑" class="layuimsg" onclick="x_admin_show('编辑用户信息','{:url('useredit')}?id={{d.id}}','450px','360px','95%','80%')">
+        <button class="layui-btn layui-btn-blue layui-btn-xs layui-btns">
+            <i class="layui-icon">&#xe642;</i>
+        </button>
+    </a>
+    <a tipsmsg="修改密码" class="layuimsg" onclick="x_admin_show('编辑用户密码','{:url('editpass')}?id={{d.id}}','400px','240px','95%','55%')">
+        <button class="layui-btn layui-btn-xs layui-btns layui-btn-green">
+            <i class="layui-icon">&#xe673;</i>
+        </button>
+    </a>
+    {{# if(d.id!=1){ }}
+    <a tipsmsg="配置权限" class="layuimsg" onclick="x_admin_show('配置权限','{:url('groupaccess')}?id={{d.id}}','','','95%','95%')">
+        <button class="layui-btn layui-btns layui-btn-black layui-btn-xs">
+            <i class="layui-icon">&#xe716;</i>
+        </button>
+    </a>
+    {{# }else{  }}
+    <a tipsmsg="配置权限" class="layuimsg" href="javascript:;">
+        <button class="layui-btn layui-btn-primary layui-btn-xs layui-btn-disabled">
+            <i class="layui-icon">&#xe716;</i>
+        </button>
+    </a>
+    {{# } }}
+    <a tipsmsg="授权登录" class="layuimsg" href="javascript:void(0)" lay-event="login" id="login">
+        <button class="layui-btn layui-btn-xs layui-btns layui-btn-violet layui-btn-padding">
+            <i class="fa fa-sign-in" aria-hidden="true"></i>
+        </button>
+    </a>
+    {{# if(d.id==1){ }}
+    <a tipsmsg="删除" class="layuimsg">
+    <button class="layui-btn layui-btn-xs layui-btn-primary layui-btn-disabled">
+    {{# }else{  }}
+    <a lay-event="del" tipsmsg="删除" class="layuimsg">
+    <button class="layui-btn layui-btn-red layui-btn-xs layui-btns">
+    {{# } }}
+    <i class="layui-icon">&#xe640;</i>
+    </button>
+    </a>
+</script>
+<script>
+    layui.use(['table','form','element','laydate'], function() {
+        var table = layui.table,form = layui.form,element = layui.element,laydate = layui.laydate, $ = layui.jquery;
+        var tableIn = table.render({
+            elem: '#list',
+            url: '{:url("userlist")}',
+            text:{none: '<i class="fa fa-snowflake-o" aria-hidden="true"></i>&nbsp;暂无相关数据'},
+            method: 'post',
+            toolbar: '#topBtn',
+            title: '用户数据信息',
+           // totalRow: true,
+            page: true,
+            cols: [[
+               /* {checkbox:true,width: 80},*/
+                {field: 'id', title: '编号', width: 100,align: 'center',sort:true},
+                {field: 'username', title: '用户名',width:120},
+                {field: 'phone', title: '手机号码',width:140},
+                {field: 'appkey', title: 'APPKEY',width:300},
+                {field: 'statu',title: '状态',width:100, align: 'center', toolbar: '#statu'},
+                {field: 'addtime', title: '添加时间',align: 'center',width:170,sort:true},
+                {title: '是否到期',width:90, align: 'center', toolbar: '#endtimes'},
+                {field: 'endtime', title: '到期时间',align: 'center',width:170,sort:true},
+                {field: 'logintime', title: '最后登录时间',align: 'center',width:170,sort:true},
+                {width: 190,title: '操作', align: 'center', toolbar: '#action',fixed:'right'}
+            ]],
+            limits:[10,100,200,400,600,1000,2000],
+            limit: 10, //每页默认显示的数量
+            done:function(res){
+                onmousemoves();
+            }
+        });
+
+        //监听单元格编辑
+        table.on('edit(list)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+            var arrs ={
+                id:data.id,//验证的数据类类型
+                name:value//提交的数据
+            };
+            loading =layer.load(1, {shade: [0.1,'#fff']});
+            $.post('{:url("platformedit")}',arrs,function(res){
+                layer.close(loading);
+                if(res.code===1){
+                    layer.msg(res.msg);
+                    tableIn.reload();
+                }else if(res.code===0){
+                    layer.msg(res.msg);
+                }else{
+                    layer.msg('你无操作权限!')  ;
+                }
+            },'json')
+        });
+
+        //复选框选中的个数
+        table.on('checkbox(list)', function (obj) {
+            var checkStatus = table.checkStatus('list');
+            var data = checkStatus.data;
+            layer.msg('选中了：'+ data.length + ' 个');
+        });
+
+        laydate.render({
+            elem: '#starttime'
+            ,theme: '#4476A7'
+            ,max: 'new Date()'
+        });
+
+        laydate.render({
+            elem: '#endtime'
+            ,theme: '#4476A7'
+            ,max: 1
+        });
+
+        form.on('select(status)', function(data){
+            tableIn.reload({
+                where: {statu: data.value}
+            });
+        })
+
+        //搜索
+        $('#search').on('click', function() {
+            var key = $('#key').val();
+            var starttime = $("#starttime").val();
+            var endtime = $("#endtime").val();
+            var t1 = new Date(starttime);
+            var t2 = new Date(endtime);
+            if((t2 - t1) < 0){
+                layer.msg('时间范围选择错误！');
+                return false;
+            }
+            var status = $('#status').val();
+            if($.trim(key) == '' && starttime == "" && endtime == "") {
+                layer.msg('搜索内容不能为空！');
+                return false;
+            }
+            tableIn.reload({
+                where: {key: key,starttime:starttime,endtime:endtime,statu:status}
+            })
+        });
+
+        //修改状态
+        form.on('switch(statu)', function(obj){
+            var urls = "{:url('userstatu')}";
+            loading =layer.load(1, {shade: [0.1,'#fff']});
+            var id = this.value;
+            var statu = obj.elem.checked===true?1:0;
+            $.post(urls,{'id':id,'statu':statu},function(res) {
+                layer.close(loading);
+                if(res.code===1){
+                    layer.msg(res.msg);
+                    tableIn.reload();
+                }else if(res.code===0){
+                    layer.msg(res.msg);
+                }else{
+                    layer.msg('你无操作权限！');
+                }
+            },'json');
+        });
+
+
+        table.on('tool(list)', function(obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('您确定要删除该信息吗？', {icon: 3,skin: 'layui-layer-lan',anim: 4,title:'删除'}, function(index){
+                    var loading = layer.load(1, {shade: [0.1, '#fff']});
+                    $.post("{:url('userdel')}",{id:data.id},function(res){
+                        layer.close(loading);
+                        if(res.code===1){
+                            layer.msg(res.msg);
+                            tableIn.reload();
+                        }else if(res.code === 0) {
+                            layer.msg(res.msg);
+                        }else{
+                            layer.msg('你无操作权限！');
+                        }
+                    },'json');
+                    layer.close(index);
+                });
+            }else{
+                var loading = layer.load(1, {shade: [0.1, '#fff']});
+                $.post("{:url('user/login/indexs')}",{id:data.id},function(res){
+                    layer.close(loading);
+                    if(res.code===1){
+                        layer.msg(res.msg,function(){
+                            window.open("{:url('user/index/index')}", "_blank");
+                        });
+                    }else if(res.code === 0) {
+                        layer.msg(res.msg);
+                    }else{
+                        layer.msg('你无操作权限！');
+                    }
+                },'json');
+            }
+        });
+
+        /*$('#delAll').click(function(){
+            var checkStatus = table.checkStatus('list'); //test即为参数uid设定的值
+            var id = [];
+            $(checkStatus.data).each(function (i, o) {
+                id.push(o.id);
+            });
+            if (id == ""){
+                layer.msg("请选择内容进行删除");
+                return false;
+            }
+            layer.confirm('确认要删除选中信息吗？', {icon: 3,skin: 'layui-layer-lan',anim: 4,title:'删除'}, function(index) {
+                layer.close(index);
+                var loading = layer.load(1, {shade: [0.1, '#fff']});
+                $.post("{:url('userdel')}", {id: id}, function (data) {
+                    layer.close(loading);
+                    if (data.code === 1) {
+                        layer.msg(data.msg);
+                        tableIn.reload();
+                    }else if(data.code === 0) {
+                        layer.msg(data.msg);
+                    }else{
+                        layer.msg('你无操作权限！');
+                    }
+                },'json');
+            });
+        })*/
+    });
+</script>

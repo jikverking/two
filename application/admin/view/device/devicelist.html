@@ -1,0 +1,360 @@
+{include file="common/head"/}
+<div class="layui-page-header headers">
+    <div class="pagewrap">
+        <span class="layui-breadcrumb">
+          <a href="{:url('index/index')}">首页</a>
+          <a href="javascript:;">{$authruleinfo.pid}</a>
+          <a><cite>{$authruleinfo.id}</cite></a>
+        </span>
+        <a href="javascript:location.replace(location.href);" style="float:right" class="layui-btn layui-btn-blue refreshs"><i class="fa fa-history falocation" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+<div class="layui-row layui-rows">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="demoTable">
+                <button  tipsmsg="批量添加" class="layui-btn layui-btn layui-btn-blue layui-btns onmousemovebtns" onclick="x_admin_show('批量添加设备','{:url('devicealladd')}','500px','400px','95%','75%')">
+                    <i class="layui-icon"></i>批量添加
+                </button>
+                <button  tipsmsg="任务清空" class="layui-btn layui-btn layui-btn-violet layui-btns onmousemovebtns" id="emptys">
+                    <i class="fa fa-grav" aria-hidden="true"></i>&nbsp;任务清空
+                </button>
+                <button  tipsmsg="软件升级" class="layui-btn layui-btn layui-btn-orange layui-btns onmousemovebtns" id="upgrade">
+                    <i class="fa fa-sort-amount-asc" aria-hidden="true"></i>&nbsp;软件升级
+                </button>
+                <button  tipsmsg="设备重启" class="layui-btn layui-btn layui-btn-black layui-btns onmousemovebtns" id="restart">
+                    <i class="fa fa-circle-o-notch" aria-hidden="true"></i>&nbsp;设备重启
+                </button>
+                <button  tipsmsg="加入分组" class="layui-btn layui-btn layui-btn-green layui-btns onmousemovebtns" id="addgroups">
+                    <i class="layui-icon"></i>加入分组
+                </button>
+                <button  tipsmsg="删除" class="layui-btn layui-btns layui-btn-red onmousemovebtns" id="delAll"><i class="layui-icon">&#xe640;</i>删除</button>
+                <span class="layui-form layui-input-inline box">
+                    <select id="infomsg">
+                        <option value="UID" selected>UID</option>
+                        <option value="IMEI">IMEI</option>
+                        <option value="备注">备注</option>
+                        <option value="品牌">品牌</option>
+                        <option value="型号">型号</option>
+                    </select>
+                </span>
+                <div class="layui-inline layui-inlines">
+                    <input class="layui-input" name="key" id="key" placeholder="请输入查询内容">
+                </div>
+                <button class="layui-btn layui-btns layui-btn-blue" id="search" data-type="reload"><i class="layui-icon" style="color: #fff">&#xe615;</i>搜索</button>
+            </div>
+            <table class="layui-table" id="list" lay-filter="list"></table>
+        </div>
+    </div>
+</div>
+<div class="headalert" id="test" style="display: none;"><br>
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">分组</label>
+            <div class="layui-input-inline">
+                <select name="group_id">
+                    <option value="">请选择分组</option>
+                    {volist name="group" id="vo"}
+                    <option value="{$vo.id}">{$vo.name}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="addgroups">分组</button>
+                <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="headalert" id="upgrades" style="display: none;"><br>
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">URL地址</label>
+            <div class="layui-input-inline">
+                <input type="text" name="datas" placeholder="请输入URL地址" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn layui-btns layui-btn-blue" lay-submit="" lay-filter="upgrades">升级</button>
+                <button type="reset" class="layui-btn layui-btns layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+{include file="common/foot"/}
+<script type="text/html" id="task_state">
+    {{# if(d.task_state=='忙'){ }}
+    <button class="layui-btn layui-btn-orange layui-btn-xs layui-btns">
+        <i class="fa fa-circle-o-notch" aria-hidden="true"></i>&nbsp;忙
+    </button>
+    {{# }else{  }}
+    <button class="layui-btn layui-btn-green layui-btn-xs layui-btns">
+        <i class="fa fa-power-off" aria-hidden="true"></i>&nbsp;&nbsp;闲
+    </button>
+    {{# } }}
+</script>
+<script type="text/html" id="topBtn">
+    <button class="layui-btn layui-btn layui-btn-blue layui-btn-sm" onclick="x_admin_show('添加设备','{:url('deviceadd')}','400px','250px','95%','55%')"><i class="layui-icon"></i>添加</button>
+</script>
+<!--<script type="text/html" id="action" >
+    <a tipsmsg="编辑" class="layuimsg" onclick="x_admin_show('编辑评论信息','{:url('commentedit')}?id={{d.id}}','700px','650px','95%','95%')">
+        <button class="layui-btn layui-btn-blue layui-btn-xs layui-btns">
+            <i class="layui-icon">&#xe642;</i>
+        </button>
+    </a>
+    <a lay-event="del" tipsmsg="删除" class="layuimsg">
+    <button class="layui-btn layui-btn-red layui-btn-xs layui-btns">
+      <i class="layui-icon">&#xe640;</i>
+    </button>
+    </a>
+</script>-->
+<script type="text/html" id="action" >
+    <a lay-event="del" tipsmsg="删除" class="layuimsg">
+    <button class="layui-btn layui-btn-red layui-btn-xs layui-btns">
+      <i class="layui-icon">&#xe640;</i>
+    </button>
+    </a>
+</script>
+<script>
+    var groups = "";
+    layui.use(['table','form','element'], function() {
+        var table = layui.table,form = layui.form,element = layui.element, $ = layui.jquery;
+
+        var tableIn = table.render({
+            elem: '#list',
+            url: '{:url("devicelist")}',
+            text:{none: '<i class="fa fa-snowflake-o" aria-hidden="true"></i>&nbsp;暂无相关数据'},
+            method: 'post',
+            toolbar: '#topBtn',
+            limits:[10,100,200,400,600,1000,2000],
+            page: true,
+            cols: [[
+                {checkbox:true,width: 80},
+                {field: 'id', title: '硬件ID', width: 120,align: 'center',sort:true},
+                {field: 'lmel', title: '硬件特征码',width:200,align: 'center'},
+                {field: 'name', title: '分组名称',width:200},
+             /*   {field: 'task_state', title: '空闲状态',width:120,align: 'center'},*/
+                {field:'task_state',title: '空闲状态',width:120, align: 'center', toolbar: '#task_state'},
+                {field: 'time', title: '添加时间',align: 'center',width:170,sort:true},
+                {width: 120,title: '操作', align: 'center', toolbar: '#action'}
+            ]],
+            limit: 10, //每页默认显示的数量
+            done:function(msgs){
+                onmousemoves();
+               /* console.log(msgs.data);*/
+            }
+        });
+
+        //复选框选中的个数
+        table.on('checkbox(list)', function (obj) {
+            var checkStatus = table.checkStatus('list');
+            var data = checkStatus.data;
+            layer.msg('选中了：'+ data.length + ' 个');
+        });
+
+        //搜索
+        $('#search').on('click', function() {
+            var key = $('#key').val();
+            var infomsg = $('#infomsg').val();
+            if($.trim(key) == '') {
+                layer.msg('搜索内容不能为空！');
+                return false;
+            }
+            tableIn.reload({
+                where: {key: key,infomsg:infomsg}
+            })
+        });
+
+        table.on('tool(list)', function(obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('您确定要删除该信息吗？', {icon: 3,skin: 'layui-layer-lan',anim: 4,title:'删除'}, function(index){
+                    var loading = layer.load(1, {shade: [0.1, '#fff']});
+                    $.post("{:url('devicedel')}",{id:data.id},function(res){
+                        layer.close(loading);
+                        if(res.code===1){
+                            layer.msg(res.msg);
+                            tableIn.reload();
+                        }else if(res.code === 0) {
+                            layer.msg(res.msg);
+                        }else{
+                            layer.msg('你无操作权限！');
+                        }
+                    },'json');
+                    layer.close(index);
+                });
+            }
+        });
+
+        $('#delAll').click(function(){
+            var checkStatus = table.checkStatus('list'); //test即为参数uid设定的值
+            var id = [];
+            $(checkStatus.data).each(function (i, o) {
+                id.push(o.id);
+            });
+            if (id == ""){
+                layer.msg("请选择设备进行删除！");
+                return false;
+            }
+            layer.confirm('确认要删除选中信息吗？', {icon: 3,skin: 'layui-layer-lan',anim: 4,title:'删除'}, function(index) {
+                layer.close(index);
+                var loading = layer.load(1, {shade: [0.1, '#fff']});
+                id = id.toString();
+                $.post("{:url('devicedel')}", {id: id}, function (data) {
+                    layer.close(loading);
+                    if (data.code === 1) {
+                        layer.msg(data.msg);
+                        tableIn.reload();
+                    }else if(data.code === 0) {
+                        layer.msg(data.msg);
+                    }else{
+                        layer.msg('你无操作权限！');
+                    }
+                },'json');
+            });
+        })
+
+
+        //任务清空
+        $("#emptys").click(function(){
+            pushtask("请选择设备进行清空！","{:url('emptys')}");
+        })
+
+        //设备重启
+        $("#restart").click(function(){
+            pushtask("请选择设备进行重启！","{:url('restart')}");
+        })
+
+        //软件升级
+        $("#upgrade").click(function(){
+           /* pushtask("请选择设备进行软件升级！","{:url('upgrade')}");*/
+            var checkStatus = table.checkStatus('list'); //test即为参数uid设定的值
+            var id = [];
+            $(checkStatus.data).each(function (i, o) {
+                id.push(o.id);
+            });
+            if (id == ""){
+                layer.msg("请选择设备进行分组！");
+                return false;
+            }
+            groups = id.toString();
+            layer.open({
+                type: 1,
+                title: '要升级的软件网络URL',
+                skin: 'layui-layer-lan',
+                shadeClose: true,
+                shade: false,
+                maxmin: true, //开启最大化最小化按钮
+                shade:0.4,
+                anim: 1,
+                area: screen() <2 ? ['95%','200px'] : ['400px', '200px'],
+                content: $("#upgrades").html()
+            });
+            form.render();
+        })
+
+        //监听提交
+        form.on('submit(upgrades)', function(data){
+            data.field.id = groups;
+            var urls = data.field.datas;
+            if(urls == ""){
+                layer.msg("URL地址不能为空!");
+                return false;
+            }
+            $.post("{:url('upgrade')}",data.field,function(res){
+                if(res.code == 1){
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.parent.location.reload();//修改成功后刷新父界面
+                    }, 1000);
+                }else if(res.code === 0) {
+                    layer.msg(res.msg);
+                }else{
+                    layer.msg('你无操作权限！');
+                }
+            },'json')
+            return false;
+        });
+
+        function pushtask(msg,url){
+            var checkStatus = table.checkStatus('list'); //test即为参数uid设定的值
+            var id = [];
+            $(checkStatus.data).each(function (i, o) {
+                id.push(o.id);
+            });
+            if (id == ""){
+                layer.msg(msg);
+                return false;
+            }
+            var loading = layer.load(1, {shade: [0.1, '#fff']});
+            id = id.toString();
+            $.post(url, {id: id}, function (data) {
+                layer.close(loading);
+                if (data.code === 1) {
+                    layer.msg(data.msg);
+                    tableIn.reload();
+                }else if(data.code === 0) {
+                    layer.msg(data.msg);
+                }else{
+                    layer.msg('你无操作权限！');
+                }
+            },'json');
+        }
+
+
+        //加入分组
+        $('#addgroups').click(function(){
+            var checkStatus = table.checkStatus('list'); //test即为参数uid设定的值
+            var id = [];
+            $(checkStatus.data).each(function (i, o) {
+                id.push(o.id);
+            });
+            if (id == ""){
+                layer.msg("请选择设备进行分组！");
+                return false;
+            }
+            groups = id.toString();
+            layer.open({
+                type: 1,
+                title: '加入分组',
+                skin: 'layui-layer-lan',
+                shadeClose: true,
+                shade: false,
+                maxmin: true, //开启最大化最小化按钮
+                shade:0.4,
+                anim: 1,
+                area: screen() <2 ? ['95%','75%'] : ['400px', '400px'],
+                content: $("#test").html()
+            });
+            form.render();
+        })
+
+        //监听提交
+        form.on('submit(addgroups)', function(data){
+            data.field.list = groups;
+            var ids = data.field.group_id;
+            if(ids == ""){
+                layer.msg("分组不能为空!");
+                return false;
+            }
+            $.post("{:url('addgroups')}",data.field,function(res){
+                if(res.code == 1){
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.parent.location.reload();//修改成功后刷新父界面
+                    }, 1000);
+                }else if(res.code === 0) {
+                    layer.msg(res.msg);
+                }else{
+                    layer.msg('你无操作权限！');
+                }
+            },'json')
+            return false;
+        });
+    });
+</script>
